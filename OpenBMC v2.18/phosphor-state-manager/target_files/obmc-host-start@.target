@@ -1,0 +1,6 @@
+[Unit]
+Description=Start Host%i
+After=multi-user.target
+Conflicts=obmc-host-stop@%i.target
+OnFailure=obmc-host-quiesce@%i.target
+OnFailureJobMode=fail

@@ -1,0 +1,5 @@
+[Unit]
+Description=Start Host%i (Pre)
+After=multi-user.target
+Conflicts=obmc-host-stop@%i.target
+RefuseManualStart=yes

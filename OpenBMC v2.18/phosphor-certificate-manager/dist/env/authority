@@ -1,0 +1,12 @@
+#REST URI endpoint
+#example: /xyz/openbmc_project/certs/authority/truststore
+ENDPOINT=truststore
+
+#Path for the certificate file
+CERTPATH=/etc/ssl/certs/authority
+
+#Units to restart
+UNIT=bmcweb.service
+
+#Type of service
+TYPE=authority

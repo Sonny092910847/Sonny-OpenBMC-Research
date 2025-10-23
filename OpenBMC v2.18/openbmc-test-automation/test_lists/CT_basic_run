@@ -1,0 +1,41 @@
+# Redfish Test.
+--include Redfish_Login_And_Logout
+--include Redfish_Login_Using_Unsecured_HTTP
+--include Login_And_Verify_HTTP_Response_Header
+# Local user management
+--include Verify_AccountService_Available
+--include Verify_IPMI_User_Summary
+--include Create_Admin_Redfish_User_And_Verify_Login_Via_IPMI
+#REST SSL connection test
+--include Test_SSL_Connection
+#Basic REST test
+--include REST_Login_Session_To_BMC
+--include Verify_REST_JSON_Data_On_Success
+--include Verify_REST_JSON_Data_On_Failure
+#Basic poweron test
+--include Verify_Front_And_Rear_LED_At_Standby
+--include Verify_Redfish_Host_PowerOn
+--include Verify_Redfish_Host_PowerOff
+# Check for apps failures
+--include Check_For_Application_Failures
+#Power test via IPMI external
+--include Verify_SOL_During_Boot
+--include Verify_Host_PowerOff_Via_IPMI
+--include Verify_Deactivate_Non_Existing_SOL
+# IPMI SEL
+--include Verify_IPMI_SEL_Version
+--include Get_System_Time
+# Redfish Date Time
+--include Verify_Redfish_BMC_Time
+#Power restore.
+--include Test_Restore_Policy_ALWAYS_POWER_OFF_With_Host_Off
+#Inventory
+--include Get_Processor_Inventory_Via_Redfish_And_Verify
+#Sensors
+--include Get_Ambient_Temperature_Records
+#Certificate via Open SSL
+--include Verify_Server_Certificate_View_Via_Openssl
+#BMC sync list test
+--include Test_BMC_Alt_Side_Mirroring
+# Check for BMC dump.
+--include Verify_No_BMC_Dump_And_Application_Failures_In_BMC

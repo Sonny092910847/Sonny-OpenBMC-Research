@@ -1,0 +1,12 @@
+[Unit]
+Description=Phosphor Power Supply Monitor
+Wants=mapper-wait@-xyz-openbmc_project-inventory.service
+After=mapper-wait@-xyz-openbmc_project-inventory.service
+Before=xyz.openbmc_project.State.Chassis@0.service
+
+[Service]
+Restart=on-failure
+ExecStart=phosphor-psu-monitor
+
+[Install]
+WantedBy=multi-user.target

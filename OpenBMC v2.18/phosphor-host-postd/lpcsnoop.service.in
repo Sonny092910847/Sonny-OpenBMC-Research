@@ -1,0 +1,10 @@
+[Unit]
+Description=LPC Snoop Daemon
+After=systemd-modules-load.service
+
+[Service]
+Restart=always
+ExecStart=@bindir@/snoopd @SNOOPD_ARGS@
+
+[Install]
+WantedBy=@SYSTEMD_TARGET@

@@ -1,0 +1,40 @@
+# Build artifacts
+build/
+*.o
+*.a
+*.so
+*.exe
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+venv/
+.env
+
+# C/C++
+*.out
+*.gch
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+.DS_Store
+
+# Logs
+*.log
+log/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Git submodule specific
+# (keeping submodules but ignoring their internal .git files)

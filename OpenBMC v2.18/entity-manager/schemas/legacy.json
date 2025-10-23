@@ -1,0 +1,1366 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$defs": {
+        "ExitAirTempSensor": {
+            "description": "implemented in dbus-sensors: ExitAirTempSensor",
+            "additionalProperties": false,
+            "properties": {
+                "AlphaF": {
+                    "type": "number"
+                },
+                "AlphaS": {
+                    "type": "number"
+                },
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "PowerFactorMax": {
+                    "$ref": "#/$defs/Types/PowerFactorMax"
+                },
+                "PowerFactorMin": {
+                    "$ref": "#/$defs/Types/PowerFactorMin"
+                },
+                "QMax": {
+                    "type": "number"
+                },
+                "QMin": {
+                    "type": "number"
+                },
+                "Thresholds": {
+                    "$ref": "#/$defs/Types/Thresholds"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "ExitAirTempSensor"
+                }
+            },
+            "required": [
+                "Name",
+                "Type",
+                "AlphaF",
+                "AlphaS",
+                "PowerFactorMax",
+                "PowerFactorMin",
+                "QMax",
+                "QMin"
+            ],
+            "type": "object"
+        },
+        "CFMSensor": {
+            "additionalProperties": false,
+            "properties": {
+                "C1": {
+                    "type": "number"
+                },
+                "C2": {
+                    "type": "number"
+                },
+                "MaxCFM": {
+                    "type": "number"
+                },
+                "TachMaxPercent": {
+                    "type": "number"
+                },
+                "TachMinPercent": {
+                    "type": "number"
+                },
+                "Tachs": {
+                    "$ref": "#/$defs/Types/Tachs"
+                },
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "CFMSensor"
+                }
+            },
+            "required": ["Name", "Type"],
+            "type": "object"
+        },
+        "FanRedundancy": {
+            "additionalProperties": false,
+            "properties": {
+                "AllowedFailures": {
+                    "$ref": "#/$defs/Types/AllowedFailures"
+                },
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "FanRedundancy"
+                }
+            },
+            "required": ["Name", "Type"],
+            "type": "object"
+        },
+        "PURedundancy": {
+            "additionalProperties": false,
+            "properties": {
+                "RedundantCount": {
+                    "$ref": "#/$defs/Types/RedundantCount"
+                },
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "PURedundancy"
+                }
+            },
+            "required": ["RedundantCount", "Name", "Type"],
+            "type": "object"
+        },
+        "ChassisIntrusionSensor": {
+            "description": "implemented in dbus-sensors: ChassisIntrusionSensor",
+            "additionalProperties": false,
+            "properties": {
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "Class": {
+                    "$ref": "#/$defs/Types/Class"
+                },
+                "GpioPolarity": {
+                    "$ref": "#/$defs/Types/GpioPolarity"
+                },
+                "Rearm": {
+                    "enum": ["Automatic", "Manual"]
+                },
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "ChassisIntrusionSensor"
+                }
+            },
+            "required": ["Name", "Type", "Class"],
+            "type": "object"
+        },
+        "AspeedFan": {
+            "additionalProperties": false,
+            "properties": {
+                "BindConnector": {
+                    "$ref": "#/$defs/Types/BindConnector"
+                },
+                "Index": {
+                    "$ref": "#/$defs/Types/Index"
+                },
+                "PowerState": {
+                    "$ref": "#/$defs/Types/PowerState"
+                },
+                "Connector": {
+                    "$ref": "#/$defs/Types/Connector"
+                },
+                "EntityId": {
+                    "$ref": "#/$defs/Types/EntityId"
+                },
+                "EntityInstance": {
+                    "$ref": "#/$defs/Types/EntityInstance"
+                },
+                "Presence": {
+                    "$ref": "#/$defs/Types/Presence"
+                },
+                "MaxReading": {
+                    "$ref": "#/$defs/Types/MaxReading"
+                },
+                "Thresholds": {
+                    "$ref": "#/$defs/Types/Thresholds"
+                },
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "AspeedFan"
+                }
+            },
+            "required": ["Name", "Type"],
+            "type": "object"
+        },
+        "I2CFan": {
+            "additionalProperties": false,
+            "properties": {
+                "BindConnector": {
+                    "$ref": "#/$defs/Types/BindConnector"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "EntityId": {
+                    "$ref": "#/$defs/Types/EntityId"
+                },
+                "EntityInstance": {
+                    "$ref": "#/$defs/Types/EntityInstance"
+                },
+                "Index": {
+                    "$ref": "#/$defs/Types/Index"
+                },
+                "PowerState": {
+                    "$ref": "#/$defs/Types/PowerState"
+                },
+                "Presence": {
+                    "$ref": "#/$defs/Types/Presence"
+                },
+                "MaxReading": {
+                    "$ref": "#/$defs/Types/MaxReading"
+                },
+                "Connector": {
+                    "$ref": "#/$defs/Types/Connector"
+                },
+                "Thresholds": {
+                    "$ref": "#/$defs/Types/Thresholds"
+                },
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "I2CFan"
+                }
+            },
+            "required": ["Name", "Type"],
+            "type": "object"
+        },
+        "NuvotonFan": {
+            "additionalProperties": false,
+            "properties": {
+                "EntityId": {
+                    "$ref": "#/$defs/Types/EntityId"
+                },
+                "EntityInstance": {
+                    "$ref": "#/$defs/Types/EntityInstance"
+                },
+                "Index": {
+                    "$ref": "#/$defs/Types/Index"
+                },
+                "PowerState": {
+                    "$ref": "#/$defs/Types/PowerState"
+                },
+                "MaxReading": {
+                    "$ref": "#/$defs/Types/MaxReading"
+                },
+                "Connector": {
+                    "$ref": "#/$defs/Types/Connector"
+                },
+                "Thresholds": {
+                    "$ref": "#/$defs/Types/Thresholds"
+                },
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "NuvotonFan"
+                }
+            },
+            "required": ["Name", "Type", "Connector"],
+            "type": "object"
+        },
+        "HPEFan": {
+            "additionalProperties": false,
+            "properties": {
+                "Index": {
+                    "$ref": "#/$defs/Types/Index"
+                },
+                "Connector": {
+                    "$ref": "#/$defs/Types/Connector"
+                },
+                "Presence": {
+                    "$ref": "#/$defs/Types/Presence"
+                },
+                "MaxReading": {
+                    "$ref": "#/$defs/Types/MaxReading"
+                },
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "HPEFan"
+                }
+            },
+            "required": ["Name", "Type", "Connector"],
+            "type": "object"
+        },
+        "XeonCPU": {
+            "description": "implemented in dbus-sensors: IntelCPUSensor",
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "PowerState": {
+                    "$ref": "#/$defs/Types/PowerState"
+                },
+                "Thresholds": {
+                    "$ref": "#/$defs/Types/Thresholds"
+                },
+                "DtsCritOffset": {
+                    "$ref": "#/$defs/Types/DtsCritOffset"
+                },
+                "PresenceGpio": {
+                    "$ref": "#/$defs/Types/PresenceGpio"
+                },
+                "CpuID": {
+                    "$ref": "#/$defs/Types/CpuID"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "XeonCPU"
+                }
+            },
+            "required": ["Name", "Type", "CpuID", "Address"],
+            "type": "object"
+        },
+        "IpmbSensor": {
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Class": {
+                    "$ref": "#/$defs/Types/Class"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "Thresholds": {
+                    "$ref": "#/$defs/Types/Thresholds"
+                },
+                "HostSMbusIndex": {
+                    "$ref": "#/$defs/Types/HostSMbusIndex"
+                },
+                "PowerState": {
+                    "$ref": "#/$defs/Types/PowerState"
+                },
+                "SensorType": {
+                    "$ref": "#/$defs/Types/SensorType"
+                },
+                "ScaleValue": {
+                    "$ref": "#/$defs/Types/ScaleValue"
+                },
+                "OffsetValue": {
+                    "$ref": "#/$defs/Types/OffsetValue"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "IpmbSensor"
+                }
+            },
+            "required": ["Name", "Type", "Address", "Class"],
+            "type": "object"
+        },
+        "I2CMux": {
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "ChannelNames": {
+                    "$ref": "#/$defs/Types/ChannelNames"
+                },
+                "Type": {
+                    "type": "string",
+                    "enum": [
+                        "PCA9543Mux",
+                        "PCA9544Mux",
+                        "PCA9545Mux",
+                        "PCA9546Mux"
+                    ]
+                }
+            },
+            "required": ["Name", "Type", "Address", "Bus", "ChannelNames"],
+            "type": "object"
+        },
+        "Gpio": {
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Index": {
+                    "$ref": "#/$defs/Types/Index"
+                },
+                "Direction": {
+                    "type": "string"
+                },
+                "Polarity": {
+                    "$ref": "#/$defs/Types/Polarity"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "Gpio"
+                }
+            },
+            "required": ["Name", "Type", "Index", "Direction", "Polarity"],
+            "type": "object"
+        },
+        "MultiNodeID": {
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "GpioPins": {
+                    "$ref": "#/$defs/Types/GpioPins"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "MultiNodeID"
+                }
+            },
+            "required": ["Name", "Type", "GpioPins"],
+            "type": "object"
+        },
+        "MultiNodePresence": {
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "MultiNodePresence"
+                }
+            },
+            "required": ["Name", "Type", "Bus", "Address"],
+            "type": "object"
+        },
+        "HostCpuUtilization": {
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Polling": {
+                    "$ref": "#/$defs/Types/Polling"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "HostCpuUtilization"
+                }
+            },
+            "required": ["Name", "Type", "Polling"],
+            "type": "object"
+        },
+        "ExternalSensor": {
+            "description": "implemented in dbus-sensors: ExternalSensor",
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Timeout": {
+                    "$ref": "#/$defs/Types/Timeout"
+                },
+                "Units": {
+                    "$ref": "#/$defs/Types/Units"
+                },
+                "MaxValue": {
+                    "$ref": "#/$defs/Types/MaxValue"
+                },
+                "MinValue": {
+                    "$ref": "#/$defs/Types/MinValue"
+                },
+                "EntityId": {
+                    "$ref": "#/$defs/Types/EntityId"
+                },
+                "EntityInstance": {
+                    "$ref": "#/$defs/Types/EntityInstance"
+                },
+                "Type": {
+                    "type": "string",
+                    "const": "ExternalSensor"
+                }
+            },
+            "required": ["Name", "Type", "Units", "EntityId", "EntityInstance"],
+            "type": "object"
+        },
+        "PSUPresence": {
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "Address": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/$defs/Types/Address"
+                        },
+                        {
+                            "$ref": "#/$defs/Types/AddressArray"
+                        }
+                    ]
+                },
+                "Type": {
+                    "const": "PSUPresence"
+                }
+            },
+            "required": ["Name", "Type", "Bus", "Address"],
+            "type": "object"
+        },
+        "EmmcDevice": {
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "const": "EmmcDevice"
+                }
+            },
+            "required": ["Name", "Type"],
+            "type": "object"
+        },
+        "IpmbDevice": {
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "Class": {
+                    "$ref": "#/$defs/Types/Class"
+                },
+                "PowerState": {
+                    "$ref": "#/$defs/Types/PowerState"
+                },
+                "Type": {
+                    "const": "IpmbDevice"
+                }
+            },
+            "required": ["Name", "Type", "Bus", "Address", "Class"],
+            "type": "object"
+        },
+        "IpmbPowerMonitor": {
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "Class": {
+                    "$ref": "#/$defs/Types/Class"
+                },
+                "Type": {
+                    "const": "IpmbPowerMonitor"
+                }
+            },
+            "required": ["Name", "Type", "Bus", "Address", "Class"],
+            "type": "object"
+        },
+        "ADC": {
+            "description": "implemented in dbus-sensors: ADCSensor",
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "BridgeGpio": {
+                    "$ref": "#/$defs/Types/BridgeGpio"
+                },
+                "PowerState": {
+                    "$ref": "#/$defs/Types/PowerState"
+                },
+                "EntityId": {
+                    "$ref": "#/$defs/Types/EntityId"
+                },
+                "EntityInstance": {
+                    "$ref": "#/$defs/Types/EntityInstance"
+                },
+                "Index": {
+                    "$ref": "#/$defs/Types/Index"
+                },
+                "PollRate": {
+                    "$ref": "#/$defs/Types/PollRate"
+                },
+                "CPURequired": {
+                    "$ref": "#/$defs/Types/CPURequired"
+                },
+                "PresenceGpio": {
+                    "$ref": "#/$defs/Types/PresenceGpio"
+                },
+                "MaxValue": {
+                    "$ref": "#/$defs/Types/MaxValue"
+                },
+                "MinValue": {
+                    "$ref": "#/$defs/Types/MinValue"
+                },
+                "ScaleFactor": {
+                    "$ref": "#/$defs/Types/ScaleFactor"
+                },
+                "Thresholds": {
+                    "$ref": "#/$defs/Types/Thresholds"
+                },
+                "Type": {
+                    "const": "ADC"
+                }
+            },
+            "required": ["Name", "Type", "Index"],
+            "type": "object"
+        },
+        "TempSensor": {
+            "description": "implemented in dbus-sensors: HwmonTempSensor",
+            "additionalProperties": false,
+            "patternProperties": {
+                "Name([1-9][0-9]*)?$": {
+                    "$ref": "#/$defs/Types/Name"
+                }
+            },
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "EntityId": {
+                    "$ref": "#/$defs/Types/EntityId"
+                },
+                "EntityInstance": {
+                    "$ref": "#/$defs/Types/EntityInstance"
+                },
+                "PowerState": {
+                    "$ref": "#/$defs/Types/PowerState"
+                },
+                "CPURequired": {
+                    "$ref": "#/$defs/Types/CPURequired"
+                },
+                "Labels": {
+                    "$ref": "#/$defs/Types/Labels"
+                },
+                "PollRate": {
+                    "$ref": "#/$defs/Types/PollRate"
+                },
+                "MinValue": {
+                    "$ref": "#/$defs/Types/MinValue"
+                },
+                "MaxValue": {
+                    "$ref": "#/$defs/Types/MaxValue"
+                },
+                "Thresholds": {
+                    "$ref": "#/$defs/Types/Thresholds"
+                },
+                "Type": {
+                    "enum": [
+                        "ADM1021",
+                        "DPS310",
+                        "EMC1403",
+                        "EMC1412",
+                        "EMC1413",
+                        "EMC1414",
+                        "HDC1080",
+                        "JC42",
+                        "LM75A",
+                        "LM95234",
+                        "MAX31725",
+                        "MAX31730",
+                        "MAX6581",
+                        "MAX6654",
+                        "MAX6639",
+                        "MCP9600",
+                        "NCT6779",
+                        "NCT7802",
+                        "PT5161L",
+                        "SBTSI",
+                        "SI7020",
+                        "TMP100",
+                        "TMP1075",
+                        "TMP112",
+                        "TMP175",
+                        "TMP411",
+                        "TMP421",
+                        "TMP432",
+                        "TMP441",
+                        "TMP461",
+                        "TMP464",
+                        "TMP468",
+                        "TMP75",
+                        "W83773G"
+                    ]
+                }
+            },
+            "required": ["Name", "Type", "Bus", "Address"],
+            "type": "object"
+        },
+        "NVME1000": {
+            "description": "implemented in dbus-sensors: NVMEeSensor",
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "PowerState": {
+                    "$ref": "#/$defs/Types/PowerState"
+                },
+                "Thresholds": {
+                    "$ref": "#/$defs/Types/Thresholds"
+                },
+                "EnablePEC": {
+                    "description": "Enable SMBus PEC generation and verification.",
+                    "type": "boolean"
+                },
+                "Type": {
+                    "const": "NVME1000"
+                }
+            },
+            "required": ["Name", "Type", "Bus", "Address"],
+            "type": "object"
+        },
+        "EEPROM": {
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "Type": {
+                    "enum": [
+                        "EEPROM",
+                        "EEPROM_24C01",
+                        "EEPROM_24C02",
+                        "EEPROM_24C04",
+                        "EEPROM_24C08",
+                        "EEPROM_24C16",
+                        "EEPROM_24C32",
+                        "EEPROM_24C64",
+                        "EEPROM_24C128",
+                        "EEPROM_24C256"
+                    ]
+                }
+            },
+            "required": ["Name", "Type", "Bus", "Address"],
+            "type": "object"
+        },
+        "PSUSensor": {
+            "description": "implemented in dbus-sensors: PSUSensor",
+            "additionalProperties": false,
+            "patternProperties": {
+                "Name(1[0-7]|[1-9])?$": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "(vin|vmon|iin|pin|maxpin)_Name$": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "(in|in_voltage|vout|in_current|in_power)(1[0-7]|[0-9])_Name$": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "(curr|iin|iout|pin|pout|power|temp)(1[0-7]|[1-9])_Name$": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "(in|in_voltage|in_current|in_power)(1[0-7]|[0-9])_Scale$": {
+                    "$ref": "#/$defs/Types/ScaleValue"
+                },
+                "(curr|power|iout)(1[0-7]|[1-9])_Scale$": {
+                    "$ref": "#/$defs/Types/ScaleValue"
+                },
+                "in(1[0-7]|[0-9])_PowerState$": {
+                    "$ref": "#/$defs/Types/PowerState"
+                },
+                "(in|vout|in_voltage)(1[0-7]|[0-9])_(Min|Max)$": {
+                    "$ref": "#/$defs/Types/MinMaxType"
+                },
+                "(iin|vin|vmon|curr|iout|pin|pout|temp)(1[0-7]|[1-9])?_(Min|Max)$": {
+                    "$ref": "#/$defs/Types/MinMaxType"
+                },
+                "power(1[0-7]|[1-9])?_Max$": {
+                    "$ref": "#/$defs/Types/MinMaxType"
+                },
+                "(power|curr|iout|pout|pin)(1[0-7]|[1-9])?_Offset$": {
+                    "$ref": "#/$defs/Types/OffsetType"
+                }
+            },
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "EntityId": {
+                    "$ref": "#/$defs/Types/EntityId"
+                },
+                "EntityInstance": {
+                    "$ref": "#/$defs/Types/EntityInstance"
+                },
+                "CPURequired": {
+                    "$ref": "#/$defs/Types/CPURequired"
+                },
+                "maxiout1_Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "fan1_Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "pin_Scale": {
+                    "$ref": "#/$defs/Types/ScaleValue"
+                },
+                "pout1_Scale": {
+                    "$ref": "#/$defs/Types/ScaleValue"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "BridgeGpio": {
+                    "$ref": "#/$defs/Types/BridgeGpio"
+                },
+                "CurrScaleFactor": {
+                    "$ref": "#/$defs/Types/CurrScaleFactor"
+                },
+                "InScaleFactor": {
+                    "$ref": "#/$defs/Types/InScaleFactor"
+                },
+                "Labels": {
+                    "$ref": "#/$defs/Types/Labels"
+                },
+                "SlotId": {
+                    "$ref": "#/$defs/Types/SlotId"
+                },
+                "PowerState": {
+                    "$ref": "#/$defs/Types/PowerState"
+                },
+                "PowerScaleFactor": {
+                    "$ref": "#/$defs/Types/PowerScaleFactor"
+                },
+                "Polling": {
+                    "$ref": "#/$defs/Types/Polling"
+                },
+                "PollRate": {
+                    "$ref": "#/$defs/Types/PollRate"
+                },
+                "Thresholds": {
+                    "$ref": "#/$defs/Types/Thresholds"
+                },
+                "Type": {
+                    "enum": [
+                        "ADC128D818",
+                        "ADM1266",
+                        "ADM1272",
+                        "ADM1275",
+                        "ADM1278",
+                        "ADM1281",
+                        "ADM1293",
+                        "ADS1015",
+                        "ADS7830",
+                        "AHE50DC_FAN",
+                        "BMR490",
+                        "cffps",
+                        "cffps1",
+                        "cffps2",
+                        "cffps3",
+                        "CRPS185",
+                        "DPS800",
+                        "INA219",
+                        "INA230",
+                        "INA233",
+                        "INA238",
+                        "IPSPS1",
+                        "IR35221",
+                        "IR38060",
+                        "IR38164",
+                        "IR38263",
+                        "ISL28022",
+                        "ISL68137",
+                        "ISL68220",
+                        "ISL68223",
+                        "ISL69225",
+                        "ISL69243",
+                        "ISL69260",
+                        "ISL69269",
+                        "LM25066",
+                        "LM5066I",
+                        "LTC2945",
+                        "LTC4282",
+                        "LTC4286",
+                        "LTC4287",
+                        "MAX5970",
+                        "MAX11607",
+                        "MAX11615",
+                        "MAX11617",
+                        "MAX16601",
+                        "MAX20710",
+                        "MAX20730",
+                        "MAX20734",
+                        "MAX20796",
+                        "MAX34451",
+                        "MP2856",
+                        "MP2857",
+                        "MP2869",
+                        "MP2971",
+                        "MP2973",
+                        "MP2975",
+                        "MP5023",
+                        "MP5990",
+                        "MP29612",
+                        "MPQ8785",
+                        "NCP4200",
+                        "PLI1209BC",
+                        "pmbus",
+                        "PXE1610",
+                        "RAA228000",
+                        "RAA228004",
+                        "RAA228006",
+                        "RAA228228",
+                        "RAA228620",
+                        "RAA229001",
+                        "RAA229004",
+                        "RAA229126",
+                        "RTQ6056",
+                        "SBRMI",
+                        "smpro_hwmon",
+                        "SQ52206",
+                        "SY24655",
+                        "TDA38640",
+                        "TPS25990",
+                        "TPS53679",
+                        "TPS546D24",
+                        "XDP710",
+                        "XDPE11280",
+                        "XDPE12284",
+                        "XDPE132G5C",
+                        "XDPE152C4"
+                    ]
+                }
+            },
+            "required": ["Name", "Type"],
+            "type": "object"
+        },
+        "NMSensor": {
+            "description": "unknown purpose",
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "const": "NMSensor"
+                }
+            }
+        },
+        "IntelHsbpFruDevice": {
+            "description": "unknown purpose",
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "const": "IntelHsbpFruDevice"
+                }
+            }
+        },
+        "IntelHsbpTempSensor": {
+            "description": "unknown purpose",
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "const": "IntelHsbpTempSensor"
+                }
+            }
+        },
+        "IntelHsbpCPLD": {
+            "description": "https://github.com/openbmc/s2600wf-misc",
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "Type": {
+                    "const": "Intel HSBP CPLD"
+                }
+            }
+        },
+        "GenericSMBusMux": {
+            "description": "unknown purpose",
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "Type": {
+                    "const": "GenericSMBusMux"
+                }
+            }
+        },
+        "BMC": {
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Type": {
+                    "const": "BMC"
+                }
+            }
+        },
+        "UCD90XXX": {
+            "description": "used in https://github.com/openbmc/phosphor-power",
+            "additionalProperties": false,
+            "properties": {
+                "Name": {
+                    "$ref": "#/$defs/Types/Name"
+                },
+                "Address": {
+                    "$ref": "#/$defs/Types/Address"
+                },
+                "Bus": {
+                    "$ref": "#/$defs/Types/Bus"
+                },
+                "Type": {
+                    "enum": ["UCD90160", "UCD90320"]
+                }
+            }
+        },
+        "Types": {
+            "Address": {
+                "type": "string"
+            },
+            "AddressArray": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/$defs/Types/Address"
+                }
+            },
+            "AllowedFailures": {
+                "type": "number",
+                "multipleOf": 1,
+                "minimum": 0
+            },
+            "BindConnector": {
+                "type": "string"
+            },
+            "BridgeGpio": {
+                "type": "array",
+                "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                        "Name": {
+                            "$ref": "#/$defs/Types/Name"
+                        },
+                        "Label": {
+                            "$ref": "#/$defs/Types/Name"
+                        },
+                        "Polarity": {
+                            "$ref": "#/$defs/Types/Polarity"
+                        },
+                        "SetupTime": {
+                            "type": "number"
+                        }
+                    },
+                    "required": ["Name", "Polarity"]
+                }
+            },
+            "Bus": {
+                "type": ["string", "number"]
+            },
+            "CPURequired": {
+                "type": "number",
+                "multipleOf": 1,
+                "minimum": 0
+            },
+            "ChannelNames": {
+                "items": {
+                    "type": "string"
+                },
+                "type": "array"
+            },
+            "Class": {
+                "type": "string",
+                "enum": [
+                    "fan",
+                    "temp",
+                    "i2c",
+                    "Aspeed2600_Hwmon",
+                    "METemp",
+                    "IpmbDevice",
+                    "twin_lake",
+                    "Gpio",
+                    "PxeBridgeTemp",
+                    "HSCBridge"
+                ]
+            },
+            "Connector": {
+                "properties": {
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Pwm": {
+                        "type": "number"
+                    },
+                    "Tachs": {
+                        "items": {
+                            "type": "number"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": ["Name", "Pwm", "Tachs"],
+                "type": "object"
+            },
+            "CpuID": {
+                "type": "number",
+                "minimum": 0,
+                "multipleOf": 1
+            },
+            "CurrScaleFactor": {
+                "type": "number"
+            },
+            "Direction": {
+                "type": "string",
+                "enum": ["less than", "greater than"]
+            },
+            "DtsCritOffset": {
+                "type": "number"
+            },
+            "EntityId": {
+                "type": "number"
+            },
+            "EntityInstance": {
+                "type": "number"
+            },
+            "GpioPins": {
+                "items": {
+                    "type": "number"
+                },
+                "type": "array"
+            },
+            "GpioPolarity": {
+                "enum": ["Low"]
+            },
+            "Index": {
+                "type": "number",
+                "minimum": 0,
+                "multipleOf": 1
+            },
+            "InScaleFactor": {
+                "type": "number"
+            },
+            "Labels": {
+                "items": {
+                    "type": "string"
+                },
+                "type": "array"
+            },
+            "MaxReading": {
+                "type": "number"
+            },
+            "MaxValue": {
+                "type": "number"
+            },
+            "MinMaxType": {
+                "type": "number"
+            },
+            "Units": {
+                "type": "string",
+                "enum": [
+                    "DegreesC",
+                    "RPMS",
+                    "Volts",
+                    "Meters",
+                    "Amperes",
+                    "Watts",
+                    "Joules",
+                    "Percent",
+                    "CFM",
+                    "Pascals"
+                ]
+            },
+            "MinReading": {
+                "type": "number"
+            },
+            "MinValue": {
+                "type": "number"
+            },
+            "Name": {
+                "type": "string"
+            },
+            "OffsetValue": {
+                "type": "number"
+            },
+            "Polarity": {
+                "enum": ["High", "Low"]
+            },
+            "Polling": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "AveragingPeriod": {
+                        "type": "number"
+                    },
+                    "Interval": {
+                        "type": "number"
+                    },
+                    "PollRate": {
+                        "type": "number"
+                    },
+                    "Label": {
+                        "type": "string"
+                    }
+                }
+            },
+            "PowerFactorMax": {
+                "type": "number"
+            },
+            "PowerFactorMin": {
+                "type": "number"
+            },
+            "PowerScaleFactor": {
+                "type": "number"
+            },
+            "PowerState": {
+                "enum": ["On", "ChassisOn", "Always", "BiosPost"]
+            },
+            "Presence": {
+                "properties": {
+                    "MonitorType": {
+                        "enum": ["Event", "Polling"]
+                    },
+                    "PinName": {
+                        "type": "string"
+                    },
+                    "Polarity": {
+                        "$ref": "#/$defs/Types/Polarity"
+                    }
+                },
+                "type": "object"
+            },
+            "PresenceGpio": {
+                "type": ["number", "array"]
+            },
+            "Pwm": {
+                "type": "number",
+                "minimum": 0,
+                "multipleOf": 1
+            },
+            "RedundantCount": {
+                "type": "number"
+            },
+            "ScaleFactor": {
+                "type": "number"
+            },
+            "ScaleValue": {
+                "type": "number"
+            },
+            "SensorType": {
+                "enum": ["current", "power", "voltage"]
+            },
+            "SlotId": {
+                "type": "string"
+            },
+            "Tachs": {
+                "items": {
+                    "type": ["number", "string"]
+                },
+                "type": "array"
+            },
+            "Thresholds": {
+                "items": {
+                    "properties": {
+                        "Direction": {
+                            "enum": ["less than", "greater than"]
+                        },
+                        "Hysteresis": {
+                            "type": "number"
+                        },
+                        "Label": {
+                            "type": "string"
+                        },
+                        "Name": {
+                            "type": "string"
+                        },
+                        "Severity": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 4
+                        },
+                        "Value": {
+                            "type": "number"
+                        }
+                    },
+                    "required": ["Direction", "Name", "Severity", "Value"],
+                    "type": "object"
+                },
+                "type": "array"
+            },
+            "Timeout": {
+                "type": "number"
+            },
+            "HostSMbusIndex": {
+                "type": "number"
+            },
+            "OffsetType": {
+                "type": "number"
+            },
+            "PollRate": {
+                "type": "number",
+                "exclusiveMinimum": 0
+            }
+        }
+    }
+}

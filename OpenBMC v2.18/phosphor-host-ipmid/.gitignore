@@ -1,0 +1,17 @@
+# ignore vim swap files
+.*.sw*
+# failures from patch
+*.orig
+*.rej
+# backup files from some editors
+*~
+.cscope/
+
+# Meson
+/build*/
+/subprojects/*
+!/subprojects/*.wrap
+subprojects/CLI11.wrap
+subprojects/function2.wrap
+subprojects/googletest.wrap
+subprojects/stdplus.wrap

@@ -1,0 +1,207 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Schemas for JSON representations of OpenBMC DBus interfaces",
+    "$defs": {
+        "xyz": {
+            "openbmc_project": {
+                "Inventory": {
+                    "Decorator": {
+                        "Asset": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "BuildDate": {
+                                    "type": "string"
+                                },
+                                "SparePartNumber": {
+                                    "type": "string"
+                                },
+                                "Manufacturer": {
+                                    "type": "string"
+                                },
+                                "Model": {
+                                    "type": "string"
+                                },
+                                "PartNumber": {
+                                    "type": "string"
+                                },
+                                "SerialNumber": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "Manufacturer",
+                                "Model",
+                                "PartNumber",
+                                "SerialNumber"
+                            ],
+                            "type": "object"
+                        },
+                        "AssetTag": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "AssetTag": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["AssetTag"],
+                            "type": "object"
+                        },
+                        "Compatible": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "Names": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "required": ["Names"],
+                            "type": "object"
+                        },
+                        "ManagedHost": {
+                            "description": "Used to enumerate hosts from 1 to N on multi-host platforms. Set to 0 for a single-host system. Can be used to map a host to e.g. a systemd service instance.",
+                            "additionalProperties": false,
+                            "properties": {
+                                "HostIndex": {
+                                    "type": ["string", "number"]
+                                }
+                            },
+                            "required": ["HostIndex"],
+                            "type": "object"
+                        },
+                        "Cable": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "Length": {
+                                    "type": "number"
+                                },
+                                "Type": {
+                                    "enum": ["Optical", "Copper", "Unknown"]
+                                }
+                            },
+                            "required": ["Length", "Type"],
+                            "type": "object"
+                        },
+                        "Replaceable": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "FieldReplaceable": {
+                                    "type": "boolean"
+                                },
+                                "HotPluggable": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "required": ["FieldReplaceable", "HotPluggable"],
+                            "type": "object"
+                        },
+                        "Slot": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "SlotNumber": {
+                                    "type": ["string", "number"]
+                                }
+                            },
+                            "required": ["SlotNumber"],
+                            "type": "object"
+                        },
+                        "Revision": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "Version": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["Version"],
+                            "type": "object"
+                        }
+                    },
+                    "Item": {
+                        "Board": {
+                            "Motherboard": {
+                                "additionalProperties": false,
+                                "type": "object"
+                            }
+                        },
+                        "Chassis": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "Type": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "NetworkInterface": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "MACAddress": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["MACAddress"],
+                            "type": "object"
+                        },
+                        "Panel": {
+                            "additionalProperties": false,
+                            "type": "object"
+                        },
+                        "System": {
+                            "additionalProperties": false,
+                            "type": "object"
+                        },
+                        "Bmc": {
+                            "additionalProperties": false,
+                            "type": "object"
+                        },
+                        "Storage": {
+                            "additionalProperties": false,
+                            "type": "object"
+                        },
+                        "Accelerator": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "Type": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["Type"],
+                            "type": "object"
+                        },
+                        "Dimm": {
+                            "additionalProperties": false,
+                            "type": "object"
+                        },
+                        "Valve": {
+                            "additionalProperties": false,
+                            "properties": {
+                                "Direction": {
+                                    "enum": [
+                                        "xyz.openbmc_project.Inventory.Item.Valve.Direction.Supply",
+                                        "xyz.openbmc_project.Inventory.Item.Valve.Direction.Return",
+                                        "xyz.openbmc_project.Inventory.Item.Valve.Direction.Unknown"
+                                    ]
+                                }
+                            },
+                            "required": ["Direction"],
+                            "type": "object"
+                        }
+                    }
+                },
+                "Common": {
+                    "UUID": {
+                        "additionalProperties": false,
+                        "properties": {
+                            "UUID": {
+                                "type": "string"
+                            }
+                        },
+                        "required": ["UUID"],
+                        "type": "object"
+                    }
+                }
+            }
+        }
+    }
+}

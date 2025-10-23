@@ -1,0 +1,5 @@
+[Unit]
+Description=Quiesce Target
+After=multi-user.target
+Conflicts=obmc-chassis-poweroff@%i.target
+Conflicts=obmc-host-stop@%i.target

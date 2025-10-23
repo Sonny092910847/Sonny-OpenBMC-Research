@@ -1,0 +1,78 @@
+# Meson ignores.
+build*/
+subprojects/*
+!subprojects/*.wrap
+!subprojects/packagefiles
+# indirect dependencies should be ignored
+subprojects/fmt.wrap
+subprojects/function2.wrap
+subprojects/stdplus.wrap
+
+# Template from
+# https://github.com/github/gitignore/blob/master/Autotools.gitignore
+
+# http://www.gnu.org/software/automake
+
+Makefile.in
+/ar-lib
+/mdate-sh
+/py-compile
+/test-driver
+/ylwrap
+
+# http://www.gnu.org/software/autoconf
+
+/autom4te.cache
+/autoscan.log
+/autoscan-*.log
+/aclocal.m4
+/compile
+/config.guess
+/config.h.in
+/config.sub
+/configure
+/configure.scan
+/depcomp
+/install-sh
+/missing
+/stamp-h1
+
+# https://www.gnu.org/software/libtool/
+
+/ltmain.sh
+
+# http://www.gnu.org/software/texinfo
+
+/texinfo.tex
+
+# Repo specific items
+*.o
+/config.h
+/config.h.in~
+/config.log
+/config.status
+/phosphor-user-manager
+Makefile
+.deps
+/*libtool
+.project
+/phosphor-ldap-mapper/phosphor-ldap-mapper
+/phosphor-ldap-config/phosphor-ldap-conf
+/test/ldap_config_test
+/test/utest
+/test/ldap_config_test.log
+/test/ldap_config_test.trs
+/test/test-suite.log
+/test/utest.log
+/test/utest.trs
+/test/ldap_mapper_test
+/test/ldap_mapper_test.log
+/test/ldap_mapper_test.trs
+/test/user_mgr_test
+/test/user_mgr_test.log
+/test/user_mgr_test.trs
+
+# devtool modify
+config.guess~
+config.sub~
+configure~

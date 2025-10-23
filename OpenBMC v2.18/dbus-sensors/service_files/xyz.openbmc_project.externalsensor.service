@@ -1,0 +1,15 @@
+[Unit]
+Description=External Sensor
+StopWhenUnneeded=false
+Requires=xyz.openbmc_project.EntityManager.service
+After=xyz.openbmc_project.EntityManager.service
+
+[Service]
+Type=dbus
+BusName=xyz.openbmc_project.ExternalSensor
+Restart=always
+RestartSec=5
+ExecStart=/usr/libexec/dbus-sensors/externalsensor
+
+[Install]
+WantedBy=multi-user.target

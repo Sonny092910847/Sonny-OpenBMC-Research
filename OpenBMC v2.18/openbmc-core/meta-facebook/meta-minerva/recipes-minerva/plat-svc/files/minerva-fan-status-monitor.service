@@ -1,0 +1,17 @@
+[Unit]
+Description=Minerva Fan Status Monitor
+Wants=xyz.openbmc_project.fansensor.service
+After=xyz.openbmc_project.fansensor.service
+Wants=phosphor-multi-gpio-presence.service
+After=phosphor-multi-gpio-presence.service
+
+[Service]
+ExecStartPre=/bin/sleep 10
+ExecStart=/usr/libexec/minerva-fan-status-monitor
+SyslogIdentifier=Minerva Fan Status Monitor
+Type=simple
+Restart=on-failure
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target

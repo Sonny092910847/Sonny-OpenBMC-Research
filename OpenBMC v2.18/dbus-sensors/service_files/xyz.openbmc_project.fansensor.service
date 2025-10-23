@@ -1,0 +1,15 @@
+[Unit]
+Description=Fan Sensor
+StopWhenUnneeded=false
+Requires=xyz.openbmc_project.EntityManager.service
+After=xyz.openbmc_project.EntityManager.service
+
+[Service]
+Type=dbus
+BusName=xyz.openbmc_project.FanSensor
+Restart=always
+RestartSec=5
+ExecStart=/usr/libexec/dbus-sensors/fansensor
+
+[Install]
+WantedBy=multi-user.target

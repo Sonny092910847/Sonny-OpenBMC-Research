@@ -1,0 +1,104 @@
+option(
+    'input-history-busname-root',
+    type: 'string',
+    value: 'org.open_power.powersupply',
+    description: 'The D-Bus busname root for the PS input history.',
+)
+option(
+    'input-history-sensor-root',
+    type: 'string',
+    value: '/org/open_power/sensors/aggregation/per_30s',
+    description: 'The D-Bus power sensors namespace root.',
+)
+option(
+    'input-history-sync-gpio',
+    type: 'string',
+    value: 'power-ffs-sync-history',
+    description: 'The GPIO line name for syncing input history data.',
+)
+option('tests', type: 'feature', description: 'Build tests.')
+option(
+    'long-tests',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Build long-running tests that are excluded from CI.',
+)
+
+# Supported power sequencers are: ucd90160, mihawk-cpld
+option(
+    'power_sequencer',
+    type: 'string',
+    value: 'ucd90160',
+    description: 'The power sequencer',
+)
+
+option(
+    'device-access',
+    type: 'boolean',
+    value: true,
+    description: 'Enable UCD90160 hardware access.',
+)
+
+option(
+    'ibm-vpd',
+    type: 'boolean',
+    value: false,
+    description: 'Setup for IBM VPD collection for inventory.',
+)
+
+option(
+    'ucd90160-yaml',
+    type: 'string',
+    value: 'example/ucd90160.yaml',
+    description: 'The sequencer definition file to use.',
+)
+option(
+    'oe-sdk',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Enable OE SDK',
+)
+option(
+    'cold-redundancy',
+    type: 'boolean',
+    description: 'Enable support for cold redundancy',
+)
+option(
+    'supply-monitor',
+    type: 'boolean',
+    description: 'Enable support for power supply monitoring',
+)
+option(
+    'supply-monitor-ng',
+    type: 'boolean',
+    description: 'Enable support for power supply monitoring',
+)
+option(
+    'regulators',
+    type: 'boolean',
+    description: 'Enable support for voltage regulator control',
+)
+option(
+    'sequencer-monitor',
+    type: 'boolean',
+    description: 'Enable support for power sequencer control',
+)
+option(
+    'power-control',
+    type: 'boolean',
+    description: 'Enable support for power sequencer control utilizing JSON configuration and supporting multiple systems in a single build image',
+)
+option(
+    'utils',
+    type: 'boolean',
+    description: 'Enable support for power supply utilities',
+)
+option(
+    'pgood-timeout-value',
+    type: 'integer',
+    min: 5,
+    max: 30,
+    value: 10,
+    description: '''The amount of time the power-sequencer will wait for pgood
+                    to turn on or off before timing out''',
+)

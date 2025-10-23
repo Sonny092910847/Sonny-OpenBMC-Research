@@ -1,0 +1,16 @@
+[Unit]
+Description=IPMB Sensor
+StopWhenUnneeded=false
+Requires=xyz.openbmc_project.EntityManager.service
+After=xyz.openbmc_project.EntityManager.service
+
+[Service]
+Type=dbus
+BusName=xyz.openbmc_project.IpmbSensor
+Restart=always
+RestartSec=5
+ExecStart=/usr/libexec/dbus-sensors/ipmbsensor
+
+[Install]
+WantedBy=multi-user.target
+

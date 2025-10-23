@@ -1,0 +1,663 @@
+# Generated file; do not modify.
+subdir('BMC')
+subdir('BMCRedundancy')
+subdir('Boot')
+subdir('Cable')
+subdir('Chassis')
+subdir('Decorator')
+subdir('Drive')
+subdir('Fan')
+subdir('Filter')
+subdir('Host')
+subdir('Leak')
+subdir('LockOut')
+subdir('OperatingSystem')
+subdir('Power')
+subdir('PowerOnHours')
+subdir('Pump')
+subdir('SMC')
+subdir('ScheduledHostTransition')
+subdir('Shutdown')
+subdir('SystemdTarget')
+subdir('Thermal')
+subdir('Valve')
+subdir('Watchdog')
+
+sdbusplus_current_path = 'xyz/openbmc_project/State'
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/BMC__markdown'.underscorify(),
+    input: [
+        '../../../../yaml/xyz/openbmc_project/State/BMC.errors.yaml',
+        '../../../../yaml/xyz/openbmc_project/State/BMC.events.yaml',
+        '../../../../yaml/xyz/openbmc_project/State/BMC.interface.yaml',
+    ],
+    output: ['BMC.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/BMC',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_registry += custom_target(
+    'xyz/openbmc_project/State/BMC__registry'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/BMC.events.yaml'],
+    output: ['BMC.json'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'registry',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/BMC',
+    ],
+    install: should_generate_registry,
+    install_dir: [inst_registry_dir / sdbusplus_current_path],
+    build_by_default: should_generate_registry,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/BMCRedundancy__markdown'.underscorify(),
+    input: [
+        '../../../../yaml/xyz/openbmc_project/State/BMCRedundancy.interface.yaml',
+    ],
+    output: ['BMCRedundancy.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/BMCRedundancy',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/Cable__markdown'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Cable.events.yaml'],
+    output: ['Cable.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Cable',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_registry += custom_target(
+    'xyz/openbmc_project/State/Cable__registry'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Cable.events.yaml'],
+    output: ['Cable.json'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'registry',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Cable',
+    ],
+    install: should_generate_registry,
+    install_dir: [inst_registry_dir / sdbusplus_current_path],
+    build_by_default: should_generate_registry,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/Chassis__markdown'.underscorify(),
+    input: [
+        '../../../../yaml/xyz/openbmc_project/State/Chassis.errors.yaml',
+        '../../../../yaml/xyz/openbmc_project/State/Chassis.interface.yaml',
+    ],
+    output: ['Chassis.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Chassis',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/Drive__markdown'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Drive.interface.yaml'],
+    output: ['Drive.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Drive',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/Fan__markdown'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Fan.events.yaml'],
+    output: ['Fan.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Fan',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_registry += custom_target(
+    'xyz/openbmc_project/State/Fan__registry'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Fan.events.yaml'],
+    output: ['Fan.json'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'registry',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Fan',
+    ],
+    install: should_generate_registry,
+    install_dir: [inst_registry_dir / sdbusplus_current_path],
+    build_by_default: should_generate_registry,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/Filter__markdown'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Filter.events.yaml'],
+    output: ['Filter.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Filter',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_registry += custom_target(
+    'xyz/openbmc_project/State/Filter__registry'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Filter.events.yaml'],
+    output: ['Filter.json'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'registry',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Filter',
+    ],
+    install: should_generate_registry,
+    install_dir: [inst_registry_dir / sdbusplus_current_path],
+    build_by_default: should_generate_registry,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/Host__markdown'.underscorify(),
+    input: [
+        '../../../../yaml/xyz/openbmc_project/State/Host.errors.yaml',
+        '../../../../yaml/xyz/openbmc_project/State/Host.interface.yaml',
+    ],
+    output: ['Host.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Host',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/LockOut__markdown'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/LockOut.events.yaml'],
+    output: ['LockOut.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/LockOut',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_registry += custom_target(
+    'xyz/openbmc_project/State/LockOut__registry'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/LockOut.events.yaml'],
+    output: ['LockOut.json'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'registry',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/LockOut',
+    ],
+    install: should_generate_registry,
+    install_dir: [inst_registry_dir / sdbusplus_current_path],
+    build_by_default: should_generate_registry,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/Power__markdown'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Power.events.yaml'],
+    output: ['Power.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Power',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_registry += custom_target(
+    'xyz/openbmc_project/State/Power__registry'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Power.events.yaml'],
+    output: ['Power.json'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'registry',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Power',
+    ],
+    install: should_generate_registry,
+    install_dir: [inst_registry_dir / sdbusplus_current_path],
+    build_by_default: should_generate_registry,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/PowerOnHours__markdown'.underscorify(),
+    input: [
+        '../../../../yaml/xyz/openbmc_project/State/PowerOnHours.interface.yaml',
+    ],
+    output: ['PowerOnHours.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/PowerOnHours',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/Pump__markdown'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Pump.events.yaml'],
+    output: ['Pump.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Pump',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_registry += custom_target(
+    'xyz/openbmc_project/State/Pump__registry'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Pump.events.yaml'],
+    output: ['Pump.json'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'registry',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Pump',
+    ],
+    install: should_generate_registry,
+    install_dir: [inst_registry_dir / sdbusplus_current_path],
+    build_by_default: should_generate_registry,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/SMC__markdown'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/SMC.events.yaml'],
+    output: ['SMC.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/SMC',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_registry += custom_target(
+    'xyz/openbmc_project/State/SMC__registry'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/SMC.events.yaml'],
+    output: ['SMC.json'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'registry',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/SMC',
+    ],
+    install: should_generate_registry,
+    install_dir: [inst_registry_dir / sdbusplus_current_path],
+    build_by_default: should_generate_registry,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/ScheduledHostTransition__markdown'.underscorify(),
+    input: [
+        '../../../../yaml/xyz/openbmc_project/State/ScheduledHostTransition.interface.yaml',
+    ],
+    output: ['ScheduledHostTransition.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/ScheduledHostTransition',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/SystemdTarget__markdown'.underscorify(),
+    input: [
+        '../../../../yaml/xyz/openbmc_project/State/SystemdTarget.errors.yaml',
+    ],
+    output: ['SystemdTarget.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/SystemdTarget',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/Thermal__markdown'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Thermal.events.yaml'],
+    output: ['Thermal.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Thermal',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_registry += custom_target(
+    'xyz/openbmc_project/State/Thermal__registry'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Thermal.events.yaml'],
+    output: ['Thermal.json'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'registry',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Thermal',
+    ],
+    install: should_generate_registry,
+    install_dir: [inst_registry_dir / sdbusplus_current_path],
+    build_by_default: should_generate_registry,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/Valve__markdown'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Valve.events.yaml'],
+    output: ['Valve.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Valve',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
+generated_registry += custom_target(
+    'xyz/openbmc_project/State/Valve__registry'.underscorify(),
+    input: ['../../../../yaml/xyz/openbmc_project/State/Valve.events.yaml'],
+    output: ['Valve.json'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'registry',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Valve',
+    ],
+    install: should_generate_registry,
+    install_dir: [inst_registry_dir / sdbusplus_current_path],
+    build_by_default: should_generate_registry,
+)
+
+generated_markdown += custom_target(
+    'xyz/openbmc_project/State/Watchdog__markdown'.underscorify(),
+    input: [
+        '../../../../yaml/xyz/openbmc_project/State/Watchdog.interface.yaml',
+    ],
+    output: ['Watchdog.md'],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog,
+        '--command',
+        'markdown',
+        '--output',
+        meson.current_build_dir(),
+        '--tool',
+        sdbusplusplus_prog,
+        '--directory',
+        meson.current_source_dir() / '../../../../yaml',
+        'xyz/openbmc_project/State/Watchdog',
+    ],
+    install: should_generate_markdown,
+    install_dir: [inst_markdown_dir / sdbusplus_current_path],
+    build_by_default: should_generate_markdown,
+)
+
