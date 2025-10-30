@@ -7,6 +7,30 @@
 
 `bmcweb/features/virtual_media/vm_websocket.hpp` 包含了**兩種互斥的架構實作**，透過編譯時選項決定使用哪一種。
 
+## ⚠️ **重要：架構 2 已被棄用！**
+
+**從 `bmcweb/meson.options` 分析發現：**
+
+- ✅ **架構 1 (vm-websocket)**: `value: 'enabled'` - **唯一實際使用的架構**
+- ❌ **架構 2 (vm-nbdproxy)**: **整個選項被註解掉** - **視為死代碼 (dead code)**
+
+### 官方註解說明：
+```
+# BMCWEB_NBDPROXY
+# if you use this option and are seeing this comment, please comment here:
+# https://github.com/openbmc/bmcweb/issues/188 and put forward your intentions
+# for this code.  At this point, no daemon has been upstreamed that implements
+# this interface, so for the moment this appears to be dead code;  In leiu of
+# removing it, it has been disabled to try to give those that use it the
+# opportunity to upstream their backend implementation
+```
+
+### 關鍵原因：
+1. **缺少後端實作**: "no daemon has been upstreamed that implements this interface"
+2. **視為死代碼**: "this appears to be dead code"
+3. **暫不移除**: 給使用者機會提供後端實作到上游
+4. **無法編譯**: 選項被完全註解，無法透過正常方式啟用
+
 ---
 
 ## 🔵 架構 1：obmc_vm (使用 Pipe)
@@ -165,8 +189,12 @@ peerSocket.async_write_some(
 
 | 項目 | 架構 1 (obmc_vm) | 架構 2 (nbd_proxy) |
 |------|-----------------|-------------------|
-| **編譯選項** | `BMCWEB_VM_WEBSOCKET` | `BMCWEB_VM_NBDPROXY` |
+| **狀態** | ✅ **使用中** | ❌ **已棄用 (死代碼)** |
+| **編譯選項** | `vm-websocket` | `vm-nbdproxy` |
+| **meson.options** | `value: 'enabled'` | **整個選項被註解** |
 | **程式碼位置** | 第 54-190 行 | 第 192-536 行 |
+| **可編譯** | ✅ 是 | ❌ 否 |
+| **後端依賴** | ✅ nbd-proxy (jsnbd 專案) | ❌ 缺少上游實作 |
 | **bmcweb 角色** | WebSocket 代理 + 進程管理 | WebSocket 代理 + Unix Socket 伺服器 |
 | **nbd-proxy** | ✅ 由 bmcweb 啟動為子進程 | ❌ **不使用** |
 | **通訊機制** | Pipe (stdin/stdout) | Unix Domain Socket |
@@ -246,21 +274,37 @@ static_assert(
 
 ## 🎯 結論
 
-1. **兩種架構互斥**: 編譯時選擇一種
-2. **架構 1 使用 Pipe**: bmcweb ↔ pipe ↔ nbd-proxy ↔ Unix Socket ↔ nbd-client
-3. **架構 2 使用 Unix Socket**: bmcweb ↔ Unix Socket ↔ nbd-client
-4. **Buffer 命名**:
-   - 架構 1: `inputBuffer` / `outputBuffer`
-   - 架構 2: `ws2uxBuf` / `ux2wsBuf` (正確反映 Unix Socket 使用)
+### ✅ 實際使用的架構
+**只有架構 1 (obmc_vm) 在生產環境中使用：**
+- 編譯選項: `vm-websocket` (預設啟用)
+- 流程: bmcweb ↔ pipe ↔ nbd-proxy ↔ Unix Socket ↔ nbd-client
+- 依賴: jsnbd 專案的 nbd-proxy 工具
+- 狀態: ✅ 完全支援，有上游實作
+
+### ❌ 已棄用的架構
+**架構 2 (nbd_proxy) 是死代碼：**
+- 編譯選項: `vm-nbdproxy` (整個選項被註解)
+- 原因: 缺少必要的後端 daemon 實作
+- 狀態: ❌ 無法編譯，等待移除或有人提供實作
+- 參考: https://github.com/openbmc/bmcweb/issues/188
+
+### 📝 關鍵發現
+1. **兩種架構設計互斥**: 但實際上只有一種能用
+2. **Buffer 命名混淆澄清**:
+   - `ux2wsBuf` / `ws2uxBuf` 只存在於死代碼中
+   - 實際使用的是 `inputBuffer` / `outputBuffer`
+3. **架構 2 的理論優勢**: 效能更好（少一層抽象），但缺乏實作支援
+4. **保留原因**: 給私有部署機會貢獻後端實作到上游
 
 ---
 
 ## 🔬 後續研究方向
 
-1. 檢查預設使用哪種架構（查看 meson_options.txt 預設值）
-2. 效能測試：比較兩種架構的資料傳輸效能
-3. 確認 nbd-proxy.c 的實作細節
-4. 研究為什麼需要兩種架構（歷史原因？平台相容性？）
+1. ✅ ~~檢查預設使用哪種架構~~ - **已確認：架構 1**
+2. 深入研究 nbd-proxy.c 的實作細節
+3. 探討架構 2 為何會失敗（缺少什麼樣的 daemon？）
+4. 研究架構演進歷史（commit history）
+5. 追蹤 GitHub Issue #188 的討論（若有權限）
 
 ---
 
