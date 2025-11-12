@@ -1,183 +1,183 @@
-# QEMU AST2600 iKVM不可行性证明工具包
+# QEMU AST2600 iKVM 不可行性證明工具包
 
-本工具包提供完整的代码证据和自动化验证工具，证明在QEMU + AST2600环境中运行iKVM是技术上不可能的。
+本工具包提供完整的程式碼證據和自動化驗證工具，證明在 QEMU + AST2600 環境中執行 iKVM 是技術上不可能的。
 
-## 文件清单
+## 檔案清單
 
-### 1. 📄 证明文档
-- **QEMU_AST2600_IKVM_IMPOSSIBILITY_PROOF.md** - 完整的代码证据文档
-  - 包含来自OpenBMC、QEMU和Linux内核的实际源代码
-  - 提供逻辑证明链
-  - 列出所有关键代码位置和GitHub链接
+### 1. 📄 證明文件
+- **QEMU_AST2600_IKVM_IMPOSSIBILITY_PROOF.md** - 完整的程式碼證據文件
+  - 包含來自 OpenBMC、QEMU 和 Linux 核心的實際原始碼
+  - 提供邏輯證明鏈
+  - 列出所有關鍵程式碼位置和 GitHub 連結
 
-### 2. 🔧 自动验证脚本
-- **verify_ikvm_impossibility.py** - Python自动验证工具
-  - 可在QEMU环境中运行
-  - 自动检查8个关键证据点
-  - 生成详细的验证报告
+### 2. 🔧 自動驗證腳本
+- **verify_ikvm_impossibility.py** - Python 自動驗證工具
+  - 可在 QEMU 環境中執行
+  - 自動檢查 8 個關鍵證據點
+  - 生成詳細的驗證報告
 
 ### 3. 📖 使用指南
-- **IKVM_IMPOSSIBILITY_README.md** (本文件)
+- **IKVM_IMPOSSIBILITY_README.md** (本檔案)
 
 ---
 
-## 快速开始
+## 快速開始
 
-### 方法1: 阅读证明文档
+### 方法1: 閱讀證明文件
 
-直接阅读详细的代码证据：
+直接閱讀詳細的程式碼證據：
 
 ```bash
-# 使用任何Markdown查看器
+# 使用任何 Markdown 檢視器
 cat QEMU_AST2600_IKVM_IMPOSSIBILITY_PROOF.md
-# 或者在浏览器中打开
+# 或者在瀏覽器中開啟
 ```
 
-**文档包含**:
-- ✅ obmc-ikvm的硬件依赖源码
-- ✅ QEMU中标记为TYPE_UNIMPLEMENTED_DEVICE的证据
-- ✅ Linux内核驱动的硬件要求
-- ✅ 完整的逻辑证明链
-- ✅ 所有源码的GitHub链接
+**文件包含**:
+- ✅ obmc-ikvm 的硬體依賴原始碼
+- ✅ QEMU 中標記為 TYPE_UNIMPLEMENTED_DEVICE 的證據
+- ✅ Linux 核心驅動程式的硬體需求
+- ✅ 完整的邏輯證明鏈
+- ✅ 所有原始碼的 GitHub 連結
 
-### 方法2: 在QEMU环境中运行自动验证
+### 方法2: 在 QEMU 環境中執行自動驗證
 
-**在QEMU模拟的OpenBMC系统中运行**:
+**在 QEMU 模擬的 OpenBMC 系統中執行**:
 
 ```bash
-# 复制脚本到QEMU环境
+# 複製腳本到 QEMU 環境
 scp verify_ikvm_impossibility.py root@<qemu-bmc-ip>:/tmp/
 
-# SSH登录到QEMU BMC
+# SSH 登入到 QEMU BMC
 ssh root@<qemu-bmc-ip>
 
-# 运行验证脚本
+# 執行驗證腳本
 cd /tmp
 python3 verify_ikvm_impossibility.py
 
-# 或以root权限运行（推荐）
+# 或以 root 權限執行（推薦）
 sudo python3 verify_ikvm_impossibility.py
 ```
 
-**输出结果**:
-- 终端显示彩色验证报告
-- 生成 `ikvm_impossibility_report.txt` - 文本格式详细报告
-- 生成 `ikvm_impossibility_evidence.json` - JSON格式原始数据
+**輸出結果**:
+- 終端顯示彩色驗證報告
+- 生成 `ikvm_impossibility_report.txt` - 文字格式詳細報告
+- 生成 `ikvm_impossibility_evidence.json` - JSON 格式原始資料
 
 ---
 
-## 验证脚本检查项目
+## 驗證腳本檢查項目
 
-脚本会自动执行以下8个检查：
+腳本會自動執行以下 8 個檢查：
 
-| # | 检查项 | 证明目标 | 预期结果(QEMU) |
+| # | 檢查項 | 證明目標 | 預期結果(QEMU) |
 |---|--------|----------|----------------|
-| 1 | QEMU环境检测 | 确认运行在QEMU中 | 检测到QEMU |
-| 2 | `/dev/video0`存在性 | Video设备文件不存在 | ✗ 不存在 |
-| 3 | `/dev/hidg0`和`/dev/hidg1`存在性 | HID设备文件不存在 | ✗ 不存在 |
-| 4 | aspeed-video驱动状态 | 驱动初始化超时 | ✗ 超时错误 |
-| 5 | obmc-ikvm服务状态 | 服务启动失败 | ✗ 未运行 |
-| 6 | VNC端口5900监听 | VNC服务器未启动 | ✗ 未监听 |
-| 7 | 内核模块加载状态 | 模块可能加载但无用 | 信息性检查 |
-| 8 | 设备树配置 | 节点存在但硬件未实现 | 信息性检查 |
+| 1 | QEMU 環境偵測 | 確認執行在 QEMU 中 | 偵測到 QEMU |
+| 2 | `/dev/video0` 存在性 | Video 裝置檔案不存在 | ✗ 不存在 |
+| 3 | `/dev/hidg0` 和 `/dev/hidg1` 存在性 | HID 裝置檔案不存在 | ✗ 不存在 |
+| 4 | aspeed-video 驅動程式狀態 | 驅動程式初始化逾時 | ✗ 逾時錯誤 |
+| 5 | obmc-ikvm 服務狀態 | 服務啟動失敗 | ✗ 未執行 |
+| 6 | VNC 埠 5900 監聽 | VNC 伺服器未啟動 | ✗ 未監聽 |
+| 7 | 核心模組載入狀態 | 模組可能載入但無用 | 資訊性檢查 |
+| 8 | 裝置樹設定 | 節點存在但硬體未實作 | 資訊性檢查 |
 
-**判定标准**:
-- ✓ 如果4个以上检查显示"预期失败"（QEMU限制） → **证据充分**
-- ⚠ 如果少于4个预期失败 → 可能不是QEMU环境或配置异常
+**判定標準**:
+- ✓ 如果 4 個以上檢查顯示「預期失敗」（QEMU 限制） → **證據充分**
+- ⚠ 如果少於 4 個預期失敗 → 可能不是 QEMU 環境或設定異常
 
 ---
 
-## 证明逻辑链
+## 證明邏輯鏈
 
 ```
-QEMU源码证据
+QEMU 原始碼證據
     ↓
 hw/arm/aspeed_ast2600.c:
 object_initialize_child(obj, "video", &s->video, TYPE_UNIMPLEMENTED_DEVICE);
     ↓
-Video Engine 是未实现设备
+Video Engine 是未實作裝置
     ↓
-Linux内核 aspeed-video 驱动
+Linux 核心 aspeed-video 驅動程式
     ↓
 drivers/media/platform/aspeed/aspeed-video.c:
-aspeed_video_probe() 超时失败
+aspeed_video_probe() 逾時失敗
     ↓
-/dev/video0 设备文件未创建
+/dev/video0 裝置檔案未建立
     ↓
-obmc-ikvm 启动失败
+obmc-ikvm 啟動失敗
     ↓
 ikvm_video.cpp:
-fd = open("/dev/video0", O_RDWR);  // 返回 -1 (ENOENT)
+fd = open("/dev/video0", O_RDWR);  // 回傳 -1 (ENOENT)
     ↓
-VNC服务器未运行 (端口5900未监听)
+VNC 伺服器未執行 (埠 5900 未監聽)
     ↓
-bmcweb 无法连接
+bmcweb 無法連線
     ↓
 kvm_websocket.hpp:
-connect("127.0.0.1", 5900);  // 连接失败
+connect("127.0.0.1", 5900);  // 連線失敗
     ↓
 iKVM 功能完全不可用
 ```
 
-同样的逻辑链适用于USB设备：
+同樣的邏輯鏈適用於 USB 裝置：
 ```
 QEMU: UnimplementedDeviceState udc
-    → 无USB Device Controller
-    → 无USB gadget框架
-    → 无 /dev/hidg0
-    → obmc-ikvm失败
+    → 無 USB Device Controller
+    → 無 USB gadget 框架
+    → 無 /dev/hidg0
+    → obmc-ikvm 失敗
 ```
 
 ---
 
-## 关键代码证据索引
+## 關鍵程式碼證據索引
 
-### QEMU源码 (github.com/qemu/qemu)
+### QEMU 原始碼 (github.com/qemu/qemu)
 
-**1. Video设备未实现**
+**1. Video 裝置未實作**
 ```c
-// hw/arm/aspeed_ast2600.c (约第130行)
+// hw/arm/aspeed_ast2600.c (約第 130 行)
 object_initialize_child(obj, "video", &s->video, TYPE_UNIMPLEMENTED_DEVICE);
 
-// 内存映射
+// 記憶體映射
 aspeed_mmio_map_unimplemented(s->memory, SYS_BUS_DEVICE(&s->video),
                               "aspeed.video",
                               sc->memmap[ASPEED_DEV_VIDEO], 0x1000);
 ```
 
-**2. 结构体定义**
+**2. 結構體定義**
 ```c
-// include/hw/arm/aspeed_soc.h (约第70行)
+// include/hw/arm/aspeed_soc.h (約第 70 行)
 struct AspeedSoCState {
-    UnimplementedDeviceState video;  // ← 关键证据
-    UnimplementedDeviceState udc;    // ← USB也未实现
+    UnimplementedDeviceState video;  // ← 關鍵證據
+    UnimplementedDeviceState udc;    // ← USB 也未實作
     // ...
 };
 ```
 
-### OpenBMC源码 (github.com/openbmc/obmc-ikvm)
+### OpenBMC 原始碼 (github.com/openbmc/obmc-ikvm)
 
-**1. Video设备打开**
+**1. Video 裝置開啟**
 ```cpp
 // ikvm_video.cpp - Video::start()
 fd = open(path.c_str(), O_RDWR);  // path = "/dev/video0"
 
-// V4L2 ioctl调用
+// V4L2 ioctl 呼叫
 ioctl(fd, VIDIOC_QUERYCAP, &cap);
 ioctl(fd, VIDIOC_G_FMT, &fmt);
 ioctl(fd, VIDIOC_S_PARM, &param);
 ```
 
-**2. HID设备打开**
+**2. HID 裝置開啟**
 ```cpp
 // ikvm_input.cpp - Input::Input()
 keyboardFd = open(keyboardPath.c_str(), O_RDWR | O_CLOEXEC);
 pointerFd = open(pointerPath.c_str(), O_RDWR | O_CLOEXEC | O_NONBLOCK);
 ```
 
-### Linux内核 (github.com/torvalds/linux)
+### Linux 核心 (github.com/torvalds/linux)
 
-**1. aspeed-video驱动**
+**1. aspeed-video 驅動程式**
 ```c
 // drivers/media/platform/aspeed/aspeed-video.c
 static const struct of_device_id aspeed_video_of_match[] = {
@@ -186,12 +186,12 @@ static const struct of_device_id aspeed_video_of_match[] = {
 };
 
 static int aspeed_video_probe(struct platform_device *pdev) {
-    // 需要硬件寄存器、中断、时钟等资源
-    // 在QEMU中会超时
+    // 需要硬體暫存器、中斷、時鐘等資源
+    // 在 QEMU 中會逾時
 }
 ```
 
-**2. aspeed USB UDC驱动**
+**2. aspeed USB UDC 驅動程式**
 ```c
 // drivers/usb/gadget/udc/aspeed_udc.c
 static const struct of_device_id ast_udc_of_match[] = {
@@ -202,178 +202,178 @@ static const struct of_device_id ast_udc_of_match[] = {
 
 ---
 
-## 示例输出
+## 範例輸出
 
-### 验证脚本输出示例
+### 驗證腳本輸出範例
 
 ```
 ════════════════════════════════════════════════════════════════════════════
-           QEMU AST2600 iKVM不可行性自动验证工具
+           QEMU AST2600 iKVM 不可行性自動驗證工具
 ════════════════════════════════════════════════════════════════════════════
 
-开始收集证据...
+開始收集證據...
 
-正在执行: 检测QEMU环境... ✓
-正在执行: 检查Video设备... ✓
-正在执行: 检查HID Gadget设备... ✓
-正在执行: 检查aspeed-video驱动... ✓
-正在执行: 检查obmc-ikvm服务... ✓
-正在执行: 检查VNC端口... ✓
-正在执行: 检查内核模块... 完成
-正在执行: 检查设备树... 完成
+正在執行: 偵測 QEMU 環境... ✓
+正在執行: 檢查 Video 裝置... ✓
+正在執行: 檢查 HID Gadget 裝置... ✓
+正在執行: 檢查 aspeed-video 驅動程式... ✓
+正在執行: 檢查 obmc-ikvm 服務... ✓
+正在執行: 檢查 VNC 埠... ✓
+正在執行: 檢查核心模組... 完成
+正在執行: 檢查裝置樹... 完成
 
-证据收集完成！
+證據收集完成！
 
 ════════════════════════════════════════════════════════════════════════════
-QEMU AST2600 iKVM不可行性验证报告
+QEMU AST2600 iKVM 不可行性驗證報告
 ════════════════════════════════════════════════════════════════════════════
 
-时间戳: 2025-11-12T10:30:00
-平台: AST2600 (可能是QEMU)
+時間戳記: 2025-11-12T10:30:00
+平台: AST2600 (可能是 QEMU)
 
-检查项总数: 8
-失败项: 5
-预期失败项（QEMU限制）: 5
+檢查項總數: 8
+失敗項: 5
+預期失敗項（QEMU 限制）: 5
 
 置信度: 非常高
-结论: ✓ 证据充分：iKVM在QEMU AST2600上不可行
+結論: ✓ 證據充分：iKVM 在 QEMU AST2600 上不可行
 
 ════════════════════════════════════════════════════════════════════════════
-详细证据
+詳細證據
 ════════════════════════════════════════════════════════════════════════════
 
-【Video设备存在性检查】
-  判定: ✓ 证据确认：设备不存在（预期）
-  说明: obmc-ikvm需要/dev/video0设备。在QEMU中由于Video Engine是TYPE_UNIMPLEMENTED_DEVICE，驱动无法创建此设备。
-  设备存在: False
+【Video 裝置存在性檢查】
+  判定: ✓ 證據確認：裝置不存在（預期）
+  說明: obmc-ikvm 需要 /dev/video0 裝置。在 QEMU 中由於 Video Engine 是 TYPE_UNIMPLEMENTED_DEVICE，驅動程式無法建立此裝置。
+  裝置存在: False
 
-【USB HID Gadget设备存在性检查】
-  判定: ✓ 证据确认：HID设备不存在（预期）
-  说明: obmc-ikvm需要/dev/hidg0和/dev/hidg1设备。在QEMU中由于USB Device Controller是UnimplementedDeviceState，无法创建USB gadget设备。
-  设备状态: {'/dev/hidg0': False, '/dev/hidg1': False}
+【USB HID Gadget 裝置存在性檢查】
+  判定: ✓ 證據確認：HID 裝置不存在（預期）
+  說明: obmc-ikvm 需要 /dev/hidg0 和 /dev/hidg1 裝置。在 QEMU 中由於 USB Device Controller 是 UnimplementedDeviceState，無法建立 USB gadget 裝置。
+  裝置狀態: {'/dev/hidg0': False, '/dev/hidg1': False}
 
-[... 更多详细证据 ...]
+[... 更多詳細證據 ...]
 
-✓ 证据充分：已证明iKVM在QEMU AST2600上不可行
+✓ 證據充分：已證明 iKVM 在 QEMU AST2600 上不可行
 ```
 
 ---
 
-## 在物理硬件上的对比
+## 在實體硬體上的對比
 
-如果在**真实的AST2600硬件**上运行相同的验证脚本，结果会完全不同：
+如果在**真實的 AST2600 硬體**上執行相同的驗證腳本，結果會完全不同：
 
-| 检查项 | QEMU结果 | 物理硬件结果 |
+| 檢查項 | QEMU 結果 | 實體硬體結果 |
 |--------|----------|--------------|
 | `/dev/video0` 存在 | ✗ 不存在 | ✓ 存在 |
 | `/dev/hidg0` 存在 | ✗ 不存在 | ✓ 存在 |
-| aspeed-video驱动 | ✗ 超时 | ✓ 正常工作 |
-| obmc-ikvm服务 | ✗ 未运行 | ✓ 运行中 |
-| VNC端口5900 | ✗ 未监听 | ✓ 监听中 |
-| iKVM功能 | ✗ 不可用 | ✓ 可用 |
+| aspeed-video 驅動程式 | ✗ 逾時 | ✓ 正常工作 |
+| obmc-ikvm 服務 | ✗ 未執行 | ✓ 執行中 |
+| VNC 埠 5900 | ✗ 未監聽 | ✓ 監聽中 |
+| iKVM 功能 | ✗ 不可用 | ✓ 可用 |
 
 ---
 
-## 常见问题 (FAQ)
+## 常見問題 (FAQ)
 
-### Q1: 为什么QEMU不实现Video Engine？
+### Q1: 為什麼 QEMU 不實作 Video Engine？
 
-**A**: 根据QEMU社区的开发优先级和技术复杂度：
-1. **架构挑战**: Video Engine需要捕获"主机"的视频输出，但在QEMU中没有虚拟主机概念
-2. **开发成本**: 需要完整模拟JPEG压缩引擎、VGA信号检测、DMA操作等
-3. **有限价值**: 大部分BMC功能（网络、IPMI、传感器等）可以在QEMU中测试
-4. **实用替代**: 廉价的AST2600评估板（$200-300）提供完整硬件
+**A**: 根據 QEMU 社群的開發優先順序和技術複雜度：
+1. **架構挑戰**: Video Engine 需要擷取「主機」的影片輸出，但在 QEMU 中沒有虛擬主機概念
+2. **開發成本**: 需要完整模擬 JPEG 壓縮引擎、VGA 訊號偵測、DMA 操作等
+3. **有限價值**: 大部分 BMC 功能（網路、IPMI、感測器等）可以在 QEMU 中測試
+4. **實用替代**: 廉價的 AST2600 評估板（$200-300）提供完整硬體
 
-### Q2: 有没有workaround可以在QEMU中运行iKVM？
+### Q2: 有沒有 workaround 可以在 QEMU 中執行 iKVM？
 
-**A**: **没有**。这不是配置问题或缺少软件包的问题，而是：
-- QEMU在C代码层面将这些设备标记为`TYPE_UNIMPLEMENTED_DEVICE`
-- 即使修改QEMU源码添加占位实现，也需要解决"虚拟主机视频源"的架构问题
-- 社区没有已知的补丁或第三方实现
+**A**: **沒有**。這不是設定問題或缺少軟體套件的問題，而是：
+- QEMU 在 C 程式碼層面將這些裝置標記為 `TYPE_UNIMPLEMENTED_DEVICE`
+- 即使修改 QEMU 原始碼新增佔位實作，也需要解決「虛擬主機影片源」的架構問題
+- 社群沒有已知的修補程式或第三方實作
 
-### Q3: OpenBMC社区知道这个限制吗？
+### Q3: OpenBMC 社群知道這個限制嗎？
 
-**A**: **是的**，这是已知且已接受的限制：
-- 从2016年起，社区就建立了"QEMU用于大部分测试，物理硬件用于iKVM"的工作流程
-- 官方文档明确指出QEMU不支持KVM、虚拟媒体等功能
-- 2020年邮件列表明确说明："There is no managed host. So there are not work the host power state management, KVM, Virtual Media and so on."
+**A**: **是的**，這是已知且已接受的限制：
+- 從 2016 年起，社群就建立了「QEMU 用於大部分測試，實體硬體用於 iKVM」的工作流程
+- 官方文件明確指出 QEMU 不支援 KVM、虛擬媒體等功能
+- 2020 年郵件列表明確說明：「There is no managed host. So there are not work the host power state management, KVM, Virtual Media and so on.」
 
-### Q4: 未来会改变吗？
+### Q4: 未來會改變嗎？
 
 **A**: **不太可能**：
-- QEMU Aspeed维护者没有提出图形控制器模拟的计划
-- 没有活跃的开发工作或补丁在审查中
-- 社区满意当前的混合测试策略
-- 技术复杂度与收益不成正比
+- QEMU Aspeed 維護者沒有提出圖形控制器模擬的計畫
+- 沒有活躍的開發工作或修補程式在審查中
+- 社群滿意目前的混合測試策略
+- 技術複雜度與收益不成正比
 
-### Q5: 如何测试iKVM功能？
+### Q5: 如何測試 iKVM 功能？
 
-**A**: **唯一方法是使用物理硬件**：
-- **评估板**: ASPEED AST2600-EVB (~$200-300)
-- **商用服务器**: 集成AST2600的服务器（Supermicro、IBM等）
-- **开发板**: 社区支持的OpenBMC硬件平台
+**A**: **唯一方法是使用實體硬體**：
+- **評估板**: ASPEED AST2600-EVB (~$200-300)
+- **商用伺服器**: 整合 AST2600 的伺服器（Supermicro、IBM 等）
+- **開發板**: 社群支援的 OpenBMC 硬體平台
 
-### Q6: bmcweb可以在QEMU中测试吗？
+### Q6: bmcweb 可以在 QEMU 中測試嗎？
 
 **A**: **部分可以**：
-- bmcweb的大部分Redfish API可以在QEMU中测试
-- KVM WebSocket端点代码可以编译，但运行时会失败
-- 需要使用条件编译或配置来跳过iKVM相关测试
+- bmcweb 的大部分 Redfish API 可以在 QEMU 中測試
+- KVM WebSocket 端點程式碼可以編譯，但執行時會失敗
+- 需要使用條件編譯或設定來跳過 iKVM 相關測試
 
 ---
 
-## 参考资源
+## 參考資源
 
-### 官方文档
-- [QEMU ASPEED文档](https://www.qemu.org/docs/master/system/arm/aspeed.html)
-- [OpenBMC项目主页](https://github.com/openbmc/openbmc)
-- [ASPEED AST2600数据手册](https://www.aspeedtech.com/)
+### 官方文件
+- [QEMU ASPEED 文件](https://www.qemu.org/docs/master/system/arm/aspeed.html)
+- [OpenBMC 專案首頁](https://github.com/openbmc/openbmc)
+- [ASPEED AST2600 資料手冊](https://www.aspeedtech.com/)
 
-### 源代码仓库
-- [QEMU源码](https://github.com/qemu/qemu) - `hw/arm/aspeed_ast2600.c`
-- [obmc-ikvm源码](https://github.com/openbmc/obmc-ikvm)
-- [Linux内核aspeed驱动](https://github.com/torvalds/linux/tree/master/drivers/media/platform/aspeed)
+### 原始碼儲存庫
+- [QEMU 原始碼](https://github.com/qemu/qemu) - `hw/arm/aspeed_ast2600.c`
+- [obmc-ikvm 原始碼](https://github.com/openbmc/obmc-ikvm)
+- [Linux 核心 aspeed 驅動程式](https://github.com/torvalds/linux/tree/master/drivers/media/platform/aspeed)
 
-### 社区讨论
-- [QEMU邮件列表存档](https://lists.gnu.org/archive/html/qemu-devel/)
-- [OpenBMC邮件列表](https://lists.ozlabs.org/listinfo/openbmc)
+### 社群討論
+- [QEMU 郵件列表存檔](https://lists.gnu.org/archive/html/qemu-devel/)
+- [OpenBMC 郵件列表](https://lists.ozlabs.org/listinfo/openbmc)
 - [OpenBMC Discord](https://discord.gg/openbmc)
 
 ---
 
-## 许可证
+## 授權條款
 
-本工具包中的所有文档和脚本采用 **MIT License**，可自由使用、修改和分发。
+本工具包中的所有文件和腳本採用 **MIT License**，可自由使用、修改和散布。
 
-引用的源代码片段保留其原始许可证：
-- QEMU代码: GPL v2
-- Linux内核代码: GPL v2
-- OpenBMC代码: Apache 2.0
+引用的原始碼片段保留其原始授權條款：
+- QEMU 程式碼: GPL v2
+- Linux 核心程式碼: GPL v2
+- OpenBMC 程式碼: Apache 2.0
 
 ---
 
-## 作者与贡献
+## 作者與貢獻
 
 **初始作者**: Claude AI (Anthropic)
-**创建日期**: 2025-11-12
+**建立日期**: 2025-11-12
 **版本**: 1.0
 
-**基于研究请求**: Sonny's OpenBMC Research Project
+**基於研究請求**: Sonny's OpenBMC Research Project
 
-如有问题或建议，请在GitHub仓库中提交issue。
-
----
-
-## 致谢
-
-感谢以下开源项目：
-- **QEMU项目** - 提供优秀的BMC模拟环境
-- **OpenBMC社区** - 开放透明的开发流程
-- **Linux内核ASPEED维护者** - 高质量的硬件驱动
-- **ASPEED Technology** - AST2600 SoC文档
+如有問題或建議，請在 GitHub 儲存庫中提交 issue。
 
 ---
 
-**最后更新**: 2025-11-12
+## 致謝
 
-**状态**: ✅ 完整 - 包含所有必要的代码证据和验证工具
+感謝以下開源專案：
+- **QEMU 專案** - 提供優秀的 BMC 模擬環境
+- **OpenBMC 社群** - 開放透明的開發流程
+- **Linux 核心 ASPEED 維護者** - 高品質的硬體驅動程式
+- **ASPEED Technology** - AST2600 SoC 文件
+
+---
+
+**最後更新**: 2025-11-12
+
+**狀態**: ✅ 完整 - 包含所有必要的程式碼證據和驗證工具

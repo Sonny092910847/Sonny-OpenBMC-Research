@@ -1,26 +1,26 @@
-# 使用代码证明：QEMU + AST2600无法模拟iKVM功能
+# 使用程式碼證明：QEMU + AST2600 無法模擬 iKVM 功能
 
-**结论：通过分析OpenBMC、QEMU和Linux内核的源代码，可以明确证明在QEMU AST2600环境中运行iKVM是技术上不可能的。**
+**結論：透過分析 OpenBMC、QEMU 和 Linux 核心的原始碼，可以明確證明在 QEMU AST2600 環境中運行 iKVM 是技術上不可能的。**
 
-本文档通过关键源代码片段提供了确凿的证据。
-
----
-
-## 目录
-1. [证据1: obmc-ikvm的硬件依赖](#证据1-obmc-ikvm的硬件依赖)
-2. [证据2: QEMU中Video设备被标记为未实现](#证据2-qemu中video设备被标记为未实现)
-3. [证据3: QEMU中USB设备控制器未实现](#证据3-qemu中usb设备控制器未实现)
-4. [证据4: Linux内核驱动的硬件要求](#证据4-linux内核驱动的硬件要求)
-5. [证据5: bmcweb的KVM依赖VNC服务器](#证据5-bmcweb的kvm依赖vnc服务器)
-6. [完整证明链](#完整证明链)
+本文檔透過關鍵原始碼片段提供了確鑿的證據。
 
 ---
 
-## 证据1: obmc-ikvm的硬件依赖
+## 目錄
+1. [證據1: obmc-ikvm 的硬體依賴](#證據1-obmc-ikvm-的硬體依賴)
+2. [證據2: QEMU 中 Video 裝置被標記為未實作](#證據2-qemu-中-video-裝置被標記為未實作)
+3. [證據3: QEMU 中 USB 裝置控制器未實作](#證據3-qemu-中-usb-裝置控制器未實作)
+4. [證據4: Linux 核心驅動程式的硬體需求](#證據4-linux-核心驅動程式的硬體需求)
+5. [證據5: bmcweb 的 KVM 依賴 VNC 伺服器](#證據5-bmcweb-的-kvm-依賴-vnc-伺服器)
+6. [完整證明鏈](#完整證明鏈)
 
-### 1.1 obmc-ikvm BitBake配方文件
+---
 
-**文件位置**: `OpenBMC v2.18/meta-phosphor/recipes-graphics/obmc-ikvm/obmc-ikvm_git.bb`
+## 證據1: obmc-ikvm 的硬體依賴
+
+### 1.1 obmc-ikvm BitBake 配方檔案
+
+**檔案位置**: `OpenBMC v2.18/meta-phosphor/recipes-graphics/obmc-ikvm/obmc-ikvm_git.bb`
 
 ```bitbake
 SUMMARY = "OpenBMC VNC server and ipKVM daemon"
@@ -33,38 +33,38 @@ SRC_URI = "git://github.com/openbmc/obmc-ikvm"
 SRCREV = "861337e8ec92767c4c88237ec5db494a2a67fa8d"
 ```
 
-**关键说明**:
-- 描述明确指出这是一个"为提供JPEG的V4L2设备服务的VNC服务器"
-- V4L2 (Video4Linux2) 是Linux的视频设备API，需要真实的硬件视频设备
+**關鍵說明**:
+- 描述明確指出這是一個「為提供 JPEG 的 V4L2 裝置服務的 VNC 伺服器」
+- V4L2 (Video4Linux2) 是 Linux 的影片裝置 API，需要真實的硬體影片裝置
 
-### 1.2 Video设备的打开和初始化
+### 1.2 Video 裝置的開啟和初始化
 
-**源文件**: `ikvm_video.cpp` (来自 https://github.com/openbmc/obmc-ikvm)
+**原始檔案**: `ikvm_video.cpp` (來自 https://github.com/openbmc/obmc-ikvm)
 
 ```cpp
-// Video::start() 方法中的设备打开代码
+// Video::start() 方法中的裝置開啟程式碼
 fd = open(path.c_str(), O_RDWR);
 
-// 验证设备能力
+// 驗證裝置能力
 rc = ioctl(fd, VIDIOC_QUERYCAP, &cap);
 
-// 获取当前格式
+// 取得目前格式
 rc = ioctl(fd, VIDIOC_G_FMT, &fmt);
 
-// 设置帧率参数
+// 設定幀率參數
 rc = ioctl(fd, VIDIOC_S_PARM, &param);
 
-// 缓冲区管理 - resize()方法
+// 緩衝區管理 - resize() 方法
 ioctl(fd, VIDIOC_STREAMOFF, &type);
 ioctl(fd, VIDIOC_REQBUFS, &req);
-// 使用mmap映射内核内存
+// 使用 mmap 映射核心記憶體
 buffers[i].data = mmap(NULL, buf.length, PROT_READ | PROT_WRITE,
                        MAP_SHARED, fd, buf.m.offset);
 ioctl(fd, VIDIOC_QBUF, &buf);
 ioctl(fd, VIDIOC_STREAMON, &type);
 ```
 
-**错误处理代码**:
+**錯誤處理程式碼**:
 ```cpp
 if (fd < 0) {
     log<level::ERR>("Failed to open input device",
@@ -75,23 +75,23 @@ if (fd < 0) {
 }
 ```
 
-**关键证据**:
-- obmc-ikvm **必须**打开`/dev/video0`设备文件
-- 使用标准V4L2 ioctl调用：`VIDIOC_QUERYCAP`, `VIDIOC_G_FMT`, `VIDIOC_S_PARM`, `VIDIOC_REQBUFS`等
-- 这些ioctl调用需要真实的硬件支持才能成功
+**關鍵證據**:
+- obmc-ikvm **必須**開啟 `/dev/video0` 裝置檔案
+- 使用標準 V4L2 ioctl 呼叫：`VIDIOC_QUERYCAP`、`VIDIOC_G_FMT`、`VIDIOC_S_PARM`、`VIDIOC_REQBUFS` 等
+- 這些 ioctl 呼叫需要真實的硬體支援才能成功
 
-### 1.3 HID Gadget设备的打开
+### 1.3 HID Gadget 裝置的開啟
 
-**源文件**: `ikvm_input.cpp` (来自 https://github.com/openbmc/obmc-ikvm)
+**原始檔案**: `ikvm_input.cpp` (來自 https://github.com/openbmc/obmc-ikvm)
 
 ```cpp
-// Input类构造函数中的设备打开代码
+// Input 類別建構函式中的裝置開啟程式碼
 keyboardFd = open(keyboardPath.c_str(), O_RDWR | O_CLOEXEC);
 
 pointerFd = open(pointerPath.c_str(), O_RDWR | O_CLOEXEC | O_NONBLOCK);
 ```
 
-**错误处理**:
+**錯誤處理**:
 ```cpp
 if (keyboardFd < 0) {
     log<level::ERR>("Failed to open input device",
@@ -102,60 +102,60 @@ if (keyboardFd < 0) {
 }
 ```
 
-**写入HID报告**:
+**寫入 HID 報告**:
 ```cpp
-rc = write(keyboardFd, report, KEY_REPORT_LENGTH);  // 8字节报告
+rc = write(keyboardFd, report, KEY_REPORT_LENGTH);  // 8 位元組報告
 rc = write(pointerFd, report, PTR_REPORT_LENGTH);
 ```
 
-**关键证据**:
-- obmc-ikvm **必须**打开`/dev/hidg0`和`/dev/hidg1`设备文件
-- 这些设备由USB Gadget框架创建，需要USB Device Controller硬件支持
+**關鍵證據**:
+- obmc-ikvm **必須**開啟 `/dev/hidg0` 和 `/dev/hidg1` 裝置檔案
+- 這些裝置由 USB Gadget 框架建立，需要 USB Device Controller 硬體支援
 
-### 1.4 命令行参数定义
+### 1.4 命令列參數定義
 
-**源文件**: `ikvm_args.cpp` (来自 https://github.com/openbmc/obmc-ikvm)
+**原始檔案**: `ikvm_args.cpp` (來自 https://github.com/openbmc/obmc-ikvm)
 
 ```cpp
 case 'v':
-    videoPath = std::string(optarg);  // 默认: /dev/video0
+    videoPath = std::string(optarg);  // 預設: /dev/video0
     break;
 case 'k':
-    keyboardPath = std::string(optarg);  // 默认: /dev/hidg0
+    keyboardPath = std::string(optarg);  // 預設: /dev/hidg0
     break;
 case 'p':
-    pointerPath = std::string(optarg);  // 默认: /dev/hidg1
+    pointerPath = std::string(optarg);  // 預設: /dev/hidg1
     break;
 ```
 
-**典型调用命令**:
+**典型呼叫命令**:
 ```bash
 obmc-ikvm -v /dev/video0 -k /dev/hidg0 -p /dev/hidg1
 ```
 
 ---
 
-## 证据2: QEMU中Video设备被标记为未实现
+## 證據2: QEMU 中 Video 裝置被標記為未實作
 
-### 2.1 QEMU AST2600 SoC初始化代码
+### 2.1 QEMU AST2600 SoC 初始化程式碼
 
-**文件**: `hw/arm/aspeed_ast2600.c` (来自 QEMU源码仓库)
+**檔案**: `hw/arm/aspeed_ast2600.c` (來自 QEMU 原始碼儲存庫)
 
 ```c
 static void aspeed_soc_ast2600_init(Object *obj)
 {
     Aspeed2600SoCState *s = ASPEED2600_SOC(obj);
 
-    // ... 其他设备初始化 ...
+    // ... 其他裝置初始化 ...
 
-    // *** 关键证据: Video设备被明确标记为TYPE_UNIMPLEMENTED_DEVICE ***
+    // *** 關鍵證據: Video 裝置被明確標記為 TYPE_UNIMPLEMENTED_DEVICE ***
     object_initialize_child(obj, "video", &s->video, TYPE_UNIMPLEMENTED_DEVICE);
 
-    // ... 更多设备 ...
+    // ... 更多裝置 ...
 }
 ```
 
-### 2.2 Video设备内存映射
+### 2.2 Video 裝置記憶體映射
 
 ```c
 static void aspeed_soc_ast2600_realize(DeviceState *dev, Error **errp)
@@ -163,79 +163,79 @@ static void aspeed_soc_ast2600_realize(DeviceState *dev, Error **errp)
     Aspeed2600SoCState *s = ASPEED2600_SOC(dev);
     Aspeed2600SoCClass *sc = ASPEED2600_SOC_GET_CLASS(s);
 
-    // ... 其他设备实现 ...
+    // ... 其他裝置實作 ...
 
-    // *** Video设备被映射为未实现设备 ***
+    // *** Video 裝置被映射為未實作裝置 ***
     aspeed_mmio_map_unimplemented(s->memory, SYS_BUS_DEVICE(&s->video),
                                   "aspeed.video",
                                   sc->memmap[ASPEED_DEV_VIDEO], 0x1000);
 
-    // ... 更多设备 ...
+    // ... 更多裝置 ...
 }
 ```
 
-### 2.3 SoC结构体定义
+### 2.3 SoC 結構體定義
 
-**文件**: `include/hw/arm/aspeed_soc.h` (来自 QEMU源码仓库)
+**檔案**: `include/hw/arm/aspeed_soc.h` (來自 QEMU 原始碼儲存庫)
 
 ```c
 struct AspeedSoCState {
     DeviceState parent;
 
-    // ... 其他设备状态 ...
+    // ... 其他裝置狀態 ...
 
-    // *** 关键证据: video字段类型为UnimplementedDeviceState ***
+    // *** 關鍵證據: video 欄位類型為 UnimplementedDeviceState ***
     UnimplementedDeviceState video;
 
-    // ... 更多未实现设备 ...
-    UnimplementedDeviceState udc;  // USB Device Controller也未实现
+    // ... 更多未實作裝置 ...
+    UnimplementedDeviceState udc;  // USB Device Controller 也未實作
     UnimplementedDeviceState dpmcu;
     // ...
 };
 ```
 
-**关键证据总结**:
-1. Video设备使用`TYPE_UNIMPLEMENTED_DEVICE`类型初始化
-2. 内存区域被映射为"未实现"，只保留地址空间但不提供功能
-3. 结构体中明确声明为`UnimplementedDeviceState`类型
-4. 这意味着所有对video寄存器的访问都会被记录但不会有实际效果
+**關鍵證據總結**:
+1. Video 裝置使用 `TYPE_UNIMPLEMENTED_DEVICE` 類型初始化
+2. 記憶體區域被映射為「未實作」，只保留位址空間但不提供功能
+3. 結構體中明確宣告為 `UnimplementedDeviceState` 類型
+4. 這意味著所有對 video 暫存器的存取都會被記錄但不會有實際效果
 
 ---
 
-## 证据3: QEMU中USB设备控制器未实现
+## 證據3: QEMU 中 USB 裝置控制器未實作
 
-### 3.1 USB Device Controller (UDC) 状态
+### 3.1 USB Device Controller (UDC) 狀態
 
-**文件**: `include/hw/arm/aspeed_soc.h` (来自 QEMU源码仓库)
+**檔案**: `include/hw/arm/aspeed_soc.h` (來自 QEMU 原始碼儲存庫)
 
 ```c
 struct AspeedSoCState {
-    // ... 其他字段 ...
+    // ... 其他欄位 ...
 
-    // *** USB Device Controller也是未实现设备 ***
+    // *** USB Device Controller 也是未實作裝置 ***
     UnimplementedDeviceState udc;
 
     // ...
 };
 ```
 
-### 3.2 QEMU开发者的确认
+### 3.2 QEMU 開發者的確認
 
-根据QEMU邮件列表存档 (2021年8月)，Joel Stanley明确指出:
+根據 QEMU 郵件列表存檔 (2021年8月)，Joel Stanley 明確指出:
 
 > "The chip also has a USB 1.1 controller (UCHI) hasn't been enabled for the ast2600.
 > There's also no qemu model hooked up."
 
-**翻译**: "该芯片还有一个USB 1.1控制器(UCHI)没有为ast2600启用。也没有连接任何qemu模型。"
+**翻譯**: 「該晶片還有一個 USB 1.1 控制器 (UCHI) 沒有為 ast2600 啟用。也沒有連接任何 qemu 模型。」
 
-### 3.3 QEMU文档中列出的缺失设备
+### 3.3 QEMU 文件中列出的缺失裝置
 
-**来源**: QEMU官方文档 (qemu.org)
+**來源**: QEMU 官方文件 (qemu.org)
 
-**AST2600缺失的设备列表**:
-- Graphic Display Controller (图形显示控制器) ✗
-- USB Device Controller (USB设备控制器) ✗
-- Video Compression Engine (视频压缩引擎) ✗
+**AST2600 缺失的裝置清單**:
+- Graphic Display Controller (圖形顯示控制器) ✗
+- USB Device Controller (USB 裝置控制器) ✗
+- Video Compression Engine (影片壓縮引擎) ✗
 - PWM/Fan Controller
 - PCI-Express Controller
 - MCTP Controller
@@ -244,18 +244,18 @@ struct AspeedSoCState {
 - eSPI Controller
 - DPMCU (Display Port MCU)
 
-**关键证据**:
-- USB Device Controller未实现意味着无法创建USB gadget设备
-- 没有USB gadget框架支持，就无法创建`/dev/hidg0`等HID设备文件
-- QEMU只实现了USB Host功能（EHCI），不支持USB Device模式
+**關鍵證據**:
+- USB Device Controller 未實作意味著無法建立 USB gadget 裝置
+- 沒有 USB gadget 框架支援，就無法建立 `/dev/hidg0` 等 HID 裝置檔案
+- QEMU 只實作了 USB Host 功能（EHCI），不支援 USB Device 模式
 
 ---
 
-## 证据4: Linux内核驱动的硬件要求
+## 證據4: Linux 核心驅動程式的硬體需求
 
-### 4.1 aspeed-video驱动的设备树匹配
+### 4.1 aspeed-video 驅動程式的裝置樹匹配
 
-**文件**: `drivers/media/platform/aspeed/aspeed-video.c` (来自 Linux内核源码)
+**檔案**: `drivers/media/platform/aspeed/aspeed-video.c` (來自 Linux 核心原始碼)
 
 ```c
 static const struct of_device_id aspeed_video_of_match[] = {
@@ -267,7 +267,7 @@ static const struct of_device_id aspeed_video_of_match[] = {
 MODULE_DEVICE_TABLE(of, aspeed_video_of_match);
 ```
 
-### 4.2 驱动探测函数
+### 4.2 驅動程式探測函式
 
 ```c
 static int aspeed_video_probe(struct platform_device *pdev)
@@ -276,17 +276,17 @@ static int aspeed_video_probe(struct platform_device *pdev)
     struct resource *res;
     struct aspeed_video *video;
 
-    // 映射IO资源
+    // 映射 IO 資源
     res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 
-    // 获取中断
+    // 取得中斷
     video->irq = platform_get_irq(pdev, 0);
     if (video->irq < 0) {
         dev_err(&pdev->dev, "Unable to find IRQ\n");
         return video->irq;
     }
 
-    // 获取时钟 - eclk和vclk
+    // 取得時鐘 - eclk 和 vclk
     video->eclk = devm_clk_get(video->dev, "eclk");
     if (IS_ERR(video->eclk)) {
         dev_err(video->dev, "Unable to get ECLK\n");
@@ -299,30 +299,30 @@ static int aspeed_video_probe(struct platform_device *pdev)
         return PTR_ERR(video->vclk);
     }
 
-    // 硬件初始化
+    // 硬體初始化
     rc = aspeed_video_init(video);
     if (rc)
         return rc;
 
-    // 注册V4L2设备
+    // 註冊 V4L2 裝置
     rc = aspeed_video_setup_video(video);
     return rc;
 }
 ```
 
-### 4.3 超时错误消息
+### 4.3 逾時錯誤訊息
 
 ```c
 #define MODE_DETECT_TIMEOUT     500  // 500ms
 #define STOP_TIMEOUT           1000  // 1000ms
 #define INVALID_RESOLUTION_DELAY 250  // 250ms
 
-// 当硬件不响应时的典型错误消息
+// 當硬體不回應時的典型錯誤訊息
 dev_warn(video->dev, "Timed out; first mode detect\n");
 dev_warn(video->dev, "Timed out; second mode detect\n");
 ```
 
-**在QEMU中运行时的实际日志输出**:
+**在 QEMU 中執行時的實際日誌輸出**:
 ```
 aspeed-video 1e700000.video: Timed out; first mode detect
 aspeed-video 1e700000.video: Timed out; second mode detect
@@ -331,9 +331,9 @@ PATH=/dev/video0
 ERROR=No such file or directory
 ```
 
-### 4.4 ASPEED USB Device Controller驱动
+### 4.4 ASPEED USB Device Controller 驅動程式
 
-**文件**: `drivers/usb/gadget/udc/aspeed_udc.c` (来自 Linux内核源码)
+**檔案**: `drivers/usb/gadget/udc/aspeed_udc.c` (來自 Linux 核心原始碼)
 
 ```c
 static const struct of_device_id ast_udc_of_match[] = {
@@ -346,14 +346,14 @@ static int ast_udc_probe(struct platform_device *pdev)
     struct ast_udc_dev *udc;
     int rc;
 
-    // 映射寄存器
+    // 映射暫存器
     udc->reg = devm_platform_ioremap_resource(pdev, 0);
     if (IS_ERR(udc->reg)) {
         dev_err(&pdev->dev, "Failed to map resources\n");
         return PTR_ERR(udc->reg);
     }
 
-    // 获取并使能时钟
+    // 取得並啟用時鐘
     udc->clk = devm_clk_get(&pdev->dev, NULL);
     rc = clk_prepare_enable(udc->clk);
     if (rc) {
@@ -361,13 +361,13 @@ static int ast_udc_probe(struct platform_device *pdev)
         return rc;
     }
 
-    // 分配DMA缓冲区
+    // 分配 DMA 緩衝區
     udc->ep0_buf = dma_alloc_coherent(&pdev->dev, ...);
 
-    // 硬件初始化
+    // 硬體初始化
     ast_udc_init_hw(udc);
 
-    // 注册USB gadget
+    // 註冊 USB gadget
     rc = usb_add_gadget_udc(&pdev->dev, &udc->gadget);
     if (rc) {
         dev_err(&pdev->dev, "Failed to add gadget udc\n");
@@ -378,20 +378,20 @@ static int ast_udc_probe(struct platform_device *pdev)
 }
 ```
 
-**关键证据**:
-1. aspeed-video驱动需要匹配设备树中的`aspeed,ast2600-video-engine`节点
-2. 驱动需要访问硬件寄存器、中断、时钟等资源
-3. **在QEMU中**，由于video硬件是`TYPE_UNIMPLEMENTED_DEVICE`，设备树节点虽然存在，但硬件寄存器不会响应
-4. 驱动初始化会超时，导致`/dev/video0`设备文件永远不会被创建
-5. USB驱动同样需要真实硬件才能注册USB gadget并创建`/dev/hidg0`设备
+**關鍵證據**:
+1. aspeed-video 驅動程式需要匹配裝置樹中的 `aspeed,ast2600-video-engine` 節點
+2. 驅動程式需要存取硬體暫存器、中斷、時鐘等資源
+3. **在 QEMU 中**，由於 video 硬體是 `TYPE_UNIMPLEMENTED_DEVICE`，裝置樹節點雖然存在，但硬體暫存器不會回應
+4. 驅動程式初始化會逾時，導致 `/dev/video0` 裝置檔案永遠不會被建立
+5. USB 驅動程式同樣需要真實硬體才能註冊 USB gadget 並建立 `/dev/hidg0` 裝置
 
 ---
 
-## 证据5: bmcweb的KVM依赖VNC服务器
+## 證據5: bmcweb 的 KVM 依賴 VNC 伺服器
 
-### 5.1 bmcweb KVM WebSocket实现
+### 5.1 bmcweb KVM WebSocket 實作
 
-**文件**: `OpenBMC v2.18/bmcweb/features/kvm/kvm_websocket.hpp`
+**檔案**: `OpenBMC v2.18/bmcweb/features/kvm/kvm_websocket.hpp`
 
 ```cpp
 class KvmSession : public std::enable_shared_from_this<KvmSession>
@@ -400,7 +400,7 @@ class KvmSession : public std::enable_shared_from_this<KvmSession>
     explicit KvmSession(crow::websocket::Connection& connIn) :
         conn(connIn), hostSocket(getIoContext())
     {
-        // *** 关键: 连接到本地5900端口的VNC服务器 ***
+        // *** 關鍵: 連線到本地 5900 埠的 VNC 伺服器 ***
         boost::asio::ip::tcp::endpoint endpoint(
             boost::asio::ip::make_address("127.0.0.1"), 5900);
 
@@ -424,14 +424,14 @@ class KvmSession : public std::enable_shared_from_this<KvmSession>
 };
 ```
 
-### 5.2 KVM路由注册
+### 5.2 KVM 路由註冊
 
 ```cpp
 inline void requestRoutes(App& app)
 {
     sessions.reserve(maxSessions);
 
-    // *** WebSocket端点: /kvm/0 ***
+    // *** WebSocket 端點: /kvm/0 ***
     BMCWEB_ROUTE(app, "/kvm/0")
         .privileges({{"ConfigureComponents", "ConfigureManager"}})
         .websocket()
@@ -444,55 +444,55 @@ inline void requestRoutes(App& app)
                 return;
             }
 
-            // *** 创建新的KVM会话，连接到obmc-ikvm VNC服务器 ***
+            // *** 建立新的 KVM 會話，連線到 obmc-ikvm VNC 伺服器 ***
             sessions[&conn] = std::make_shared<KvmSession>(conn);
         })
         // ...
 }
 ```
 
-**关键证据**:
-1. bmcweb的KVM功能只是一个WebSocket代理
-2. 它连接到本地`127.0.0.1:5900`，期望obmc-ikvm VNC服务器在那里监听
-3. 如果obmc-ikvm无法启动（因为缺少`/dev/video0`和`/dev/hidg0`），连接会失败
-4. bmcweb本身不直接访问硬件，但完全依赖obmc-ikvm服务
+**關鍵證據**:
+1. bmcweb 的 KVM 功能只是一個 WebSocket 代理
+2. 它連線到本地 `127.0.0.1:5900`，期望 obmc-ikvm VNC 伺服器在那裡監聽
+3. 如果 obmc-ikvm 無法啟動（因為缺少 `/dev/video0` 和 `/dev/hidg0`），連線會失敗
+4. bmcweb 本身不直接存取硬體，但完全依賴 obmc-ikvm 服務
 
 ---
 
-## 完整证明链
+## 完整證明鏈
 
-### 证明逻辑流程
+### 證明邏輯流程
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ 第1层: 用户访问                                              │
-│ 用户通过浏览器访问 https://BMC_IP/kvm/0                     │
+│ 第1層: 使用者存取                                             │
+│ 使用者透過瀏覽器存取 https://BMC_IP/kvm/0                    │
 └────────────────────┬────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ 第2层: bmcweb WebSocket代理                                 │
-│ bmcweb尝试连接到 127.0.0.1:5900                             │
-│ 文件: bmcweb/features/kvm/kvm_websocket.hpp:36              │
+│ 第2層: bmcweb WebSocket 代理                                │
+│ bmcweb 嘗試連線到 127.0.0.1:5900                            │
+│ 檔案: bmcweb/features/kvm/kvm_websocket.hpp:36              │
 └────────────────────┬────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ 第3层: obmc-ikvm VNC服务器                                  │
-│ 需要启动并监听5900端口                                       │
+│ 第3層: obmc-ikvm VNC 伺服器                                 │
+│ 需要啟動並監聽 5900 埠                                       │
 │ 命令: obmc-ikvm -v /dev/video0 -k /dev/hidg0               │
 └────────────────────┬────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ 第4层: 设备文件要求                                          │
-│ ├─ /dev/video0  → 由aspeed-video驱动创建                    │
-│ └─ /dev/hidg0   → 由USB gadget框架创建                      │
+│ 第4層: 裝置檔案需求                                          │
+│ ├─ /dev/video0  → 由 aspeed-video 驅動程式建立              │
+│ └─ /dev/hidg0   → 由 USB gadget 框架建立                    │
 └────────────────────┬────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ 第5层: Linux内核驱动                                         │
+│ 第5層: Linux 核心驅動程式                                    │
 │ ├─ aspeed-video.ko                                          │
 │ │  └─ 需要匹配 "aspeed,ast2600-video-engine"               │
 │ └─ aspeed_udc.ko                                            │
@@ -501,16 +501,16 @@ inline void requestRoutes(App& app)
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ 第6层: 硬件设备                                              │
+│ 第6層: 硬體裝置                                              │
 │ ├─ Video Compression Engine (0x1E700000)                   │
-│ │  └─ 需要响应V4L2 ioctl调用                                │
+│ │  └─ 需要回應 V4L2 ioctl 呼叫                              │
 │ └─ USB Device Controller (0x1E6A0000)                      │
-│    └─ 需要USB PHY和端点管理                                 │
+│    └─ 需要 USB PHY 和端點管理                                │
 └────────────────────┬────────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ *** 在QEMU中断裂点 ***                                       │
+│ *** 在 QEMU 中斷裂點 ***                                     │
 │                                                              │
 │ QEMU AST2600: hw/arm/aspeed_ast2600.c                       │
 │                                                              │
@@ -520,145 +520,145 @@ inline void requestRoutes(App& app)
 │                          TYPE_UNIMPLEMENTED_DEVICE);        │
 │                                                              │
 │ ✗ UDC: UnimplementedDeviceState udc                         │
-│   (没有连接任何USB设备控制器模型)                             │
+│   (沒有連接任何 USB 裝置控制器模型)                          │
 │                                                              │
-│ 结果:                                                        │
-│ • aspeed-video驱动探测超时                                   │
+│ 結果:                                                        │
+│ • aspeed-video 驅動程式探測逾時                              │
 │ • /dev/video0 不存在                                        │
 │ • /dev/hidg0 不存在                                         │
-│ • obmc-ikvm无法启动                                          │
-│ • bmcweb连接失败                                             │
-│ • iKVM功能完全不可用                                         │
+│ • obmc-ikvm 無法啟動                                         │
+│ • bmcweb 連線失敗                                            │
+│ • iKVM 功能完全不可用                                        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 数学形式的证明
+### 數學形式的證明
 
-设:
-- `H` = 真实AST2600硬件
-- `Q` = QEMU AST2600模拟
-- `V` = Video Engine功能
-- `U` = USB Device Controller功能
-- `D` = 设备文件存在 (`/dev/video0`, `/dev/hidg0`)
-- `I` = obmc-ikvm服务运行
-- `K` = iKVM功能可用
+設:
+- `H` = 真實 AST2600 硬體
+- `Q` = QEMU AST2600 模擬
+- `V` = Video Engine 功能
+- `U` = USB Device Controller 功能
+- `D` = 裝置檔案存在 (`/dev/video0`, `/dev/hidg0`)
+- `I` = obmc-ikvm 服務執行
+- `K` = iKVM 功能可用
 
-**必要条件链**:
-1. `K → I` (iKVM可用 需要 obmc-ikvm运行)
-2. `I → D` (obmc-ikvm运行 需要 设备文件存在)
-3. `D → (V ∧ U)` (设备文件存在 需要 Video和USB硬件功能)
-4. `(V ∧ U) → H` (Video和USB功能 需要 真实硬件)
+**必要條件鏈**:
+1. `K → I` (iKVM 可用 需要 obmc-ikvm 執行)
+2. `I → D` (obmc-ikvm 執行 需要 裝置檔案存在)
+3. `D → (V ∧ U)` (裝置檔案存在 需要 Video 和 USB 硬體功能)
+4. `(V ∧ U) → H` (Video 和 USB 功能 需要 真實硬體)
 
-**QEMU的现实**:
-- `Q ⊨ ¬V` (QEMU明确不实现Video Engine)
-- `Q ⊨ ¬U` (QEMU明确不实现USB Device Controller)
+**QEMU 的現實**:
+- `Q ⊨ ¬V` (QEMU 明確不實作 Video Engine)
+- `Q ⊨ ¬U` (QEMU 明確不實作 USB Device Controller)
 
-**逻辑推导**:
+**邏輯推導**:
 ```
-Q ⊨ ¬V ∧ ¬U              [QEMU的现实]
-¬V ∧ ¬U → ¬D             [由3的逆否命题]
-¬D → ¬I                  [由2的逆否命题]
-¬I → ¬K                  [由1的逆否命题]
+Q ⊨ ¬V ∧ ¬U              [QEMU 的現實]
+¬V ∧ ¬U → ¬D             [由3的逆否命題]
+¬D → ¬I                  [由2的逆否命題]
+¬I → ¬K                  [由1的逆否命題]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-∴ Q ⊨ ¬K                 [传递律]
+∴ Q ⊨ ¬K                 [傳遞律]
 ```
 
-**结论**: 在QEMU AST2600环境中，iKVM功能不可能实现 (Q.E.D.)
+**結論**: 在 QEMU AST2600 環境中，iKVM 功能不可能實現 (Q.E.D.)
 
 ---
 
-## 代码位置快速参考
+## 程式碼位置快速參考
 
-### OpenBMC源码 (本地)
-| 组件 | 文件路径 | 行号 | 关键内容 |
+### OpenBMC 原始碼 (本地)
+| 元件 | 檔案路徑 | 行號 | 關鍵內容 |
 |------|---------|------|----------|
-| obmc-ikvm配方 | `OpenBMC v2.18/meta-phosphor/recipes-graphics/obmc-ikvm/obmc-ikvm_git.bb` | 1-18 | BitBake配置 |
-| bmcweb KVM | `OpenBMC v2.18/bmcweb/features/kvm/kvm_websocket.hpp` | 35-36 | 连接到127.0.0.1:5900 |
+| obmc-ikvm 配方 | `OpenBMC v2.18/meta-phosphor/recipes-graphics/obmc-ikvm/obmc-ikvm_git.bb` | 1-18 | BitBake 設定 |
+| bmcweb KVM | `OpenBMC v2.18/bmcweb/features/kvm/kvm_websocket.hpp` | 35-36 | 連線到 127.0.0.1:5900 |
 
-### obmc-ikvm源码 (GitHub)
-| 文件 | GitHub URL | 关键函数/代码 |
+### obmc-ikvm 原始碼 (GitHub)
+| 檔案 | GitHub URL | 關鍵函式/程式碼 |
 |------|-----------|--------------|
-| ikvm_video.cpp | github.com/openbmc/obmc-ikvm/blob/861337e8/ikvm_video.cpp | `Video::start()` - open()和ioctl调用 |
-| ikvm_input.cpp | github.com/openbmc/obmc-ikvm/blob/861337e8/ikvm_input.cpp | `Input::Input()` - 打开HID设备 |
-| ikvm_args.cpp | github.com/openbmc/obmc-ikvm/blob/861337e8/ikvm_args.cpp | 命令行参数解析 |
+| ikvm_video.cpp | github.com/openbmc/obmc-ikvm/blob/861337e8/ikvm_video.cpp | `Video::start()` - open() 和 ioctl 呼叫 |
+| ikvm_input.cpp | github.com/openbmc/obmc-ikvm/blob/861337e8/ikvm_input.cpp | `Input::Input()` - 開啟 HID 裝置 |
+| ikvm_args.cpp | github.com/openbmc/obmc-ikvm/blob/861337e8/ikvm_args.cpp | 命令列參數解析 |
 
-### QEMU源码 (GitHub)
-| 文件 | GitHub URL | 行号 | 关键内容 |
+### QEMU 原始碼 (GitHub)
+| 檔案 | GitHub URL | 行號 | 關鍵內容 |
 |------|-----------|------|----------|
 | aspeed_ast2600.c | github.com/qemu/qemu/blob/master/hw/arm/aspeed_ast2600.c | ~130 | `object_initialize_child(..., TYPE_UNIMPLEMENTED_DEVICE)` |
 | aspeed_soc.h | github.com/qemu/qemu/blob/master/include/hw/arm/aspeed_soc.h | ~70 | `UnimplementedDeviceState video;` |
 
-### Linux内核源码 (GitHub)
-| 文件 | GitHub URL | 关键函数 |
+### Linux 核心原始碼 (GitHub)
+| 檔案 | GitHub URL | 關鍵函式 |
 |------|-----------|----------|
 | aspeed-video.c | github.com/torvalds/linux/blob/master/drivers/media/platform/aspeed/aspeed-video.c | `aspeed_video_probe()` |
 | aspeed_udc.c | github.com/torvalds/linux/blob/master/drivers/usb/gadget/udc/aspeed_udc.c | `ast_udc_probe()` |
 
 ---
 
-## 结论
+## 結論
 
-通过分析以上所有源代码，我们可以得出以下确凿结论：
+透過分析以上所有原始碼，我們可以得出以下確鑿結論：
 
-### 1. **obmc-ikvm的绝对硬件依赖**
-   - **必须**能够打开并操作`/dev/video0` (V4L2设备)
-   - **必须**能够打开并操作`/dev/hidg0` (USB HID gadget设备)
-   - 没有替代方案或fallback模式
+### 1. **obmc-ikvm 的絕對硬體依賴**
+   - **必須**能夠開啟並操作 `/dev/video0` (V4L2 裝置)
+   - **必須**能夠開啟並操作 `/dev/hidg0` (USB HID gadget 裝置)
+   - 沒有替代方案或 fallback 模式
 
-### 2. **QEMU的明确限制**
-   - Video Engine被标记为`TYPE_UNIMPLEMENTED_DEVICE`
-   - USB Device Controller被标记为`UnimplementedDeviceState`
-   - 这是**设计决策**，不是待修复的bug
+### 2. **QEMU 的明確限制**
+   - Video Engine 被標記為 `TYPE_UNIMPLEMENTED_DEVICE`
+   - USB Device Controller 被標記為 `UnimplementedDeviceState`
+   - 這是**設計決策**，不是待修復的 bug
 
-### 3. **Linux内核驱动无法初始化**
-   - aspeed-video驱动在QEMU中会超时失败
-   - aspeed-udc驱动无法找到硬件
-   - 没有硬件支持，设备文件永远不会被创建
+### 3. **Linux 核心驅動程式無法初始化**
+   - aspeed-video 驅動程式在 QEMU 中會逾時失敗
+   - aspeed-udc 驅動程式無法找到硬體
+   - 沒有硬體支援，裝置檔案永遠不會被建立
 
-### 4. **整个软件栈都会失败**
-   - obmc-ikvm启动时立即失败（无法打开设备）
-   - bmcweb连接到5900端口失败（VNC服务器未运行）
-   - 用户界面显示连接错误
+### 4. **整個軟體堆疊都會失敗**
+   - obmc-ikvm 啟動時立即失敗（無法開啟裝置）
+   - bmcweb 連線到 5900 埠失敗（VNC 伺服器未執行）
+   - 使用者介面顯示連線錯誤
 
-### 5. **没有已知的解决方案**
-   - QEMU社区没有计划实现这些设备
-   - 没有第三方补丁或workaround
-   - 物理硬件是唯一选择
+### 5. **沒有已知的解決方案**
+   - QEMU 社群沒有計畫實作這些裝置
+   - 沒有第三方修補程式或 workaround
+   - 實體硬體是唯一選擇
 
 ---
 
-## 附录：验证方法
+## 附錄：驗證方法
 
-如果你想亲自验证这些证据，可以在QEMU AST2600环境中运行以下命令：
+如果你想親自驗證這些證據，可以在 QEMU AST2600 環境中執行以下命令：
 
 ```bash
-# 1. 检查video设备是否存在
+# 1. 檢查 video 裝置是否存在
 ls -l /dev/video*
-# 预期结果: ls: cannot access '/dev/video*': No such file or directory
+# 預期結果: ls: cannot access '/dev/video*': No such file or directory
 
-# 2. 检查HID gadget设备是否存在
+# 2. 檢查 HID gadget 裝置是否存在
 ls -l /dev/hidg*
-# 预期结果: ls: cannot access '/dev/hidg*': No such file or directory
+# 預期結果: ls: cannot access '/dev/hidg*': No such file or directory
 
-# 3. 检查内核日志中的驱动失败消息
+# 3. 檢查核心日誌中的驅動程式失敗訊息
 dmesg | grep -i "aspeed-video"
-# 预期结果: Timed out; first mode detect
+# 預期結果: Timed out; first mode detect
 
-# 4. 尝试手动启动obmc-ikvm
+# 4. 嘗試手動啟動 obmc-ikvm
 obmc-ikvm -v /dev/video0 -k /dev/hidg0 -p /dev/hidg1
-# 预期结果: Failed to open input device PATH=/dev/video0 ERROR=No such file or directory
+# 預期結果: Failed to open input device PATH=/dev/video0 ERROR=No such file or directory
 
-# 5. 检查systemd服务状态
+# 5. 檢查 systemd 服務狀態
 systemctl status start-ipkvm.service
-# 预期结果: failed (code=exited, status=1/FAILURE)
+# 預期結果: failed (code=exited, status=1/FAILURE)
 ```
 
 ---
 
-**文档版本**: 1.0
-**创建日期**: 2025-11-12
-**OpenBMC版本**: v2.18.0
-**QEMU版本**: master (截至2025年)
-**Linux内核版本**: mainline (截至2025年)
+**文檔版本**: 1.0
+**建立日期**: 2025-11-12
+**OpenBMC 版本**: v2.18.0
+**QEMU 版本**: master (截至2025年)
+**Linux 核心版本**: mainline (截至2025年)
 
-**作者注**: 本文档中的所有代码片段都来自官方源代码仓库，可以通过提供的链接进行验证。这不是理论分析，而是基于实际代码的确凿证据。
+**作者註**: 本文檔中的所有程式碼片段都來自官方原始碼儲存庫，可以透過提供的連結進行驗證。這不是理論分析，而是基於實際程式碼的確鑿證據。
