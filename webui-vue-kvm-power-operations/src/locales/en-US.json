@@ -1,0 +1,28 @@
+{
+  "pageKvmConsole": {
+    "title": "KVM Console",
+    "description": "Remote KVM console with integrated server power operations",
+    "powerStatus": "Server Power Status",
+    "powerStateOn": "On",
+    "powerStateOff": "Off",
+    "powerStateUnknown": "Unknown",
+    "powerOn": "Power On",
+    "gracefulRestart": "Graceful Restart",
+    "forceRestart": "Force Restart",
+    "gracefulShutdown": "Graceful Shutdown",
+    "forceOff": "Force Off",
+    "powerCycle": "Power Cycle",
+    "operationInProgress": "Power operation in progress...",
+    "confirmOperation": "Confirm Power Operation",
+    "confirmPowerOn": "Are you sure you want to power on the server?",
+    "confirmGracefulRestart": "Are you sure you want to gracefully restart the server? This will attempt to shut down the OS properly before restarting.",
+    "confirmForceRestart": "Are you sure you want to force restart the server? This may cause data loss if the OS is not properly shut down.",
+    "confirmGracefulShutdown": "Are you sure you want to gracefully shut down the server? This will attempt to shut down the OS properly.",
+    "confirmForceOff": "Are you sure you want to force off the server? This may cause data loss if the OS is not properly shut down.",
+    "confirmPowerCycle": "Are you sure you want to power cycle the server? This will turn off and then on the power.",
+    "operationSuccess": "Power operation completed successfully",
+    "operationFailed": "Power operation failed",
+    "success": "Success",
+    "error": "Error"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "pageKvmConsole": {
+    "title": "KVM 控制台",
+    "description": "遠端 KVM 控制台與整合的伺服器電源操作",
+    "powerStatus": "伺服器電源狀態",
+    "powerStateOn": "開機",
+    "powerStateOff": "關機",
+    "powerStateUnknown": "未知",
+    "powerOn": "開機",
+    "gracefulRestart": "優雅重啟",
+    "forceRestart": "強制重啟",
+    "gracefulShutdown": "優雅關機",
+    "forceOff": "強制關閉",
+    "powerCycle": "電源循環",
+    "operationInProgress": "電源操作進行中...",
+    "confirmOperation": "確認電源操作",
+    "confirmPowerOn": "確定要開啟伺服器電源嗎？",
+    "confirmGracefulRestart": "確定要優雅重啟伺服器嗎？這將嘗試正常關閉作業系統後再重新啟動。",
+    "confirmForceRestart": "確定要強制重啟伺服器嗎？如果作業系統未正常關閉，可能會導致資料遺失。",
+    "confirmGracefulShutdown": "確定要優雅關閉伺服器嗎？這將嘗試正常關閉作業系統。",
+    "confirmForceOff": "確定要強制關閉伺服器嗎？如果作業系統未正常關閉，可能會導致資料遺失。",
+    "confirmPowerCycle": "確定要執行電源循環嗎？這將關閉電源後再重新開啟。",
+    "operationSuccess": "電源操作已成功完成",
+    "operationFailed": "電源操作失敗",
+    "success": "成功",
+    "error": "錯誤"
+  }
+}
