@@ -3,6 +3,18 @@
 ## ✅ 驗證時間
 2025-11-14
 
+## ⚠️ 重要說明
+
+**關於 vue.config.js：**
+- ❌ **不需要使用此倉庫中的 vue.config.js**
+- ✅ **請使用原版 OpenBMC webui-vue 的 vue.config.js**
+- ⚠️ GitHub 某些分支的 vue.config.js 包含有問題的 SCSS 配置
+- ⚠️ 這會導致 Bootstrap SCSS 變數未定義錯誤 (`Undefined variable: $colors`)
+
+**作業只需要修改這 2 個檔案：**
+1. `src/views/Operations/Kvm/KvmConsole.vue` ✅
+2. `src/locales/en-US.json` ✅
+
 ## ✅ Vue 版本相容性確認
 
 ### 目標 Vue 版本
@@ -113,5 +125,23 @@ data() {
 
 ## 相關檔案
 
-- `vue.config.js` - Vue CLI 配置（建議使用原版 OpenBMC 配置）
-- `src/locales/en-US.json` - 英文翻譯檔案
+- ~~`vue.config.js`~~ - ❌ **已移除，請使用原版 OpenBMC 配置**
+- `src/locales/en-US.json` - ✅ 英文翻譯檔案
+
+## 下載指令
+
+在您的 OpenBMC 開發環境中：
+
+```bash
+cd ~/openbmc/build/romulus/workspace/sources/webui-vue
+
+# 1. 下載 KvmConsole.vue（已驗證 Vue 2 語法）
+wget https://raw.githubusercontent.com/Sonny092910847/Sonny-OpenBMC-Research/claude/kvm-console-power-operations-01TpEgf5fsQWF8PRpA857vMG/webui-vue-kvm-power-operations/src/views/Operations/Kvm/KvmConsole.vue \
+  -O src/views/Operations/Kvm/KvmConsole.vue
+
+# 2. 下載 en-US.json
+wget https://raw.githubusercontent.com/Sonny092910847/Sonny-OpenBMC-Research/claude/kvm-console-power-operations-01TpEgf5fsQWF8PRpA857vMG/webui-vue-kvm-power-operations/src/locales/en-US.json \
+  -O src/locales/en-US.json
+
+# ⚠️ 不要下載 vue.config.js！保持原版配置
+```
