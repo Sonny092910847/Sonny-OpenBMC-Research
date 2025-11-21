@@ -1,3 +1,0 @@
-- name: MultiUserTargetFailure
-  inherits:
-      - xyz.openbmc_project.State.SystemdTarget.Failure

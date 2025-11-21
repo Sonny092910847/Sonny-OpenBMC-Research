@@ -1,7 +1,0 @@
-description: >
-    An extended version string for a xyz.openbmc_project.Software.Version.
-properties:
-    - name: ExtendedVersion
-      type: string
-      description: >
-          Extended version of the level.

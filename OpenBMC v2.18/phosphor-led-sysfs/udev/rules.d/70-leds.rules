@@ -1,1 +1,0 @@
-SUBSYSTEM=="leds", ACTION=="add", TAG+="systemd", ENV{SYSTEMD_WANTS}+="sysfs-led@$name"

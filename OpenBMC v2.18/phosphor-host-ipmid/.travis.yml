@@ -1,9 +1,0 @@
-language: c
-
-sudo: required
-
-services:
-    - docker
-
-script:
-    - ./.build.sh

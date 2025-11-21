@@ -1,7 +1,0 @@
-[Unit]
-Description=Updates the u-boot variable to point BMC to %I
-
-[Service]
-Type=oneshot
-RemainAfterExit=no
-ExecStart=/usr/bin/obmc-flash-bmc updateubootvars %i

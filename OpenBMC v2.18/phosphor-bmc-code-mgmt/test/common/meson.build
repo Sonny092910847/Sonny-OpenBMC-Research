@@ -1,2 +1,0 @@
-subdir('exampledevice')
-subdir('software')

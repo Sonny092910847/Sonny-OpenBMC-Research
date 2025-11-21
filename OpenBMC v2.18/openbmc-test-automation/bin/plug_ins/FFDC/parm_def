@@ -1,3 +1,0 @@
-# A command to be run to determine whether ffdc should be collected.  If the command returns non-zero, FFDC
-# should be collected.
-command=string

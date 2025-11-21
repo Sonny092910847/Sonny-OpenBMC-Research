@@ -38,3 +38,7 @@ temp/
 
 # Git submodule specific
 # (keeping submodules but ignoring their internal .git files)
+
+# OpenBMC repositories (downloaded by clone_repos.sh)
+# Only track our own modifications, not the original OpenBMC v2.18 source code
+OpenBMC v2.18/

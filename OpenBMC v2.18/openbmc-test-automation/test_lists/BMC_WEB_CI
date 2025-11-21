@@ -1,5 +1,0 @@
-#Basic GUI operations
---include Verify_IP_address
---include Verify_Select_Health_Status_From_Server_Health
---include Verify_Event_Log_Text_Appears_By_Clicking_Server_Health
---include OpenBMC GUI Logoff

@@ -1,8 +1,0 @@
-[wrap-git]
-url = https://github.com/openbmc/phosphor-host-ipmid
-revision = HEAD
-
-[provide]
-libipmid = ipmid_dep
-libchannellayer = channellayer_dep
-libuserlayer = userlayer_dep

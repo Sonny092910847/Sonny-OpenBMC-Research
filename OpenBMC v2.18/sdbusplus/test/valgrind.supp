@@ -1,8 +1,0 @@
-{
-   <suppress_epoll_ctl>
-   Memcheck:Param
-   epoll_ctl(event)
-   fun:epoll_ctl
-   ...
-   fun:sd_event*
-}

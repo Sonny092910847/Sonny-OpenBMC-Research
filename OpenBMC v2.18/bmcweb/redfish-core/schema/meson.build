@@ -1,2 +1,0 @@
-subdir('dmtf')
-subdir('oem')

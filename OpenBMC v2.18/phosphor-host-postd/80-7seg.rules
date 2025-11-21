@@ -1,1 +1,0 @@
-SUBSYSTEM=="disp_state", ACTION=="add", TAG+="systemd"

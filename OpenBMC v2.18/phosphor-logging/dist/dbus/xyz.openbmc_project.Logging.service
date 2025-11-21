@@ -1,5 +1,0 @@
-[D-BUS Service]
-Name=xyz.openbmc_project.Logging
-Exec=/bin/false
-User=root
-SystemdService=dbus-xyz.openbmc_project.Logging.service

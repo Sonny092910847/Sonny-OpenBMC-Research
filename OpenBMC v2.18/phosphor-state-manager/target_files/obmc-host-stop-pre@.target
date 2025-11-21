@@ -1,7 +1,0 @@
-[Unit]
-Description=Stop Host%i (Pre)
-After=multi-user.target
-Wants=obmc-host-stopping@%i.target
-Before=obmc-host-stopping@%i.target
-Conflicts=obmc-host-startmin@%i.target
-RefuseManualStart=yes

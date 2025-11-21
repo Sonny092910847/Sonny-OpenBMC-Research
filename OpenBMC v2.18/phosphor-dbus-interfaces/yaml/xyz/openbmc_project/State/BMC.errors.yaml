@@ -1,3 +1,0 @@
-# xyz.openbmc_project.State.BMC.Error.MultiUserTargetFailure
-- name: MultiUserTargetFailure
-  description: The systemd multi-user.target failed to complete

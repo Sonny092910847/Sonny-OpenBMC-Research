@@ -1,3 +1,0 @@
-# xyz.openbmc_project.Logging.SEL.Error.Created
-- name: Created
-  description: A System Event Log is created

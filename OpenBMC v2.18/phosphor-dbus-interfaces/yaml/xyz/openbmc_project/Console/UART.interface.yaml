@@ -1,6 +1,0 @@
-description: Serial console configuration.
-
-properties:
-    - name: Baud
-      type: uint64
-      description: Data transmission rate of the serial console.

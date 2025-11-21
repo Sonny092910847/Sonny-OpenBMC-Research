@@ -1,4 +1,0 @@
-build*/
-subprojects/*
-!subprojects/phosphor-logging.wrap
-!subprojects/nlohmann_json.wrap

@@ -1,5 +1,0 @@
-click
-logger
-PyYAML
-paramiko
-

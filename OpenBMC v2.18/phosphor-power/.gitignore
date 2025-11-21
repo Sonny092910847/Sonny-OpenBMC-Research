@@ -1,6 +1,0 @@
-build*/
-subprojects/*
-!subprojects/*.wrap
-!subprojects/packagefiles
-*.sw*
-tags
