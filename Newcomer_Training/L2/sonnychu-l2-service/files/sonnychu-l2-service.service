@@ -1,0 +1,13 @@
+[Unit]
+Description=SonnyChu L2 Training D-Bus Service
+After=dbus.service
+Requires=dbus.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/sonnychu-l2-service
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
