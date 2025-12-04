@@ -1,0 +1,11 @@
+--- aspeed-bmc-opp-romulus.dts.orig	2025-12-03 15:41:58.042974749 +0800
++++ aspeed-bmc-opp-romulus.dts.modified	2025-12-03 15:51:16.688384230 +0800
+@@ -222,7 +222,7 @@
+ };
+ 
+ &i2c12 {
+-	status = "okay";
++	status = "disabled";
+ 
+ 	w83773g@4c {
+ 		compatible = "nuvoton,w83773g";
