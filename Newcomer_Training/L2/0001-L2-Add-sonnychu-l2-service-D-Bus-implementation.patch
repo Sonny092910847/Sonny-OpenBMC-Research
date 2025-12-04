@@ -1,0 +1,299 @@
+From d362377eed517e9acb172f136deec690e9dd815d Mon Sep 17 00:00:00 2001
+From: Sonny Chu <sonny@local>
+Date: Thu, 4 Dec 2025 17:38:10 +0800
+Subject: [PATCH] L2: Add sonnychu-l2-service D-Bus implementation
+
+---
+ .../sonnychu-l2-service/files/meson.build     |  20 ++
+ .../files/sonnychu-l2-service.cpp             | 199 ++++++++++++++++++
+ .../files/sonnychu-l2-service.service         |  13 ++
+ .../sonnychu-l2-service_1.0.bb                |  24 +++
+ 4 files changed, 256 insertions(+)
+ create mode 100644 recipes-l2/sonnychu-l2-service/files/meson.build
+ create mode 100644 recipes-l2/sonnychu-l2-service/files/sonnychu-l2-service.cpp
+ create mode 100644 recipes-l2/sonnychu-l2-service/files/sonnychu-l2-service.service
+ create mode 100644 recipes-l2/sonnychu-l2-service/sonnychu-l2-service_1.0.bb
+
+diff --git a/recipes-l2/sonnychu-l2-service/files/meson.build b/recipes-l2/sonnychu-l2-service/files/meson.build
+new file mode 100644
+index 0000000..a5805ce
+--- /dev/null
++++ b/recipes-l2/sonnychu-l2-service/files/meson.build
+@@ -0,0 +1,20 @@
++project(
++    'sonnychu-l2-service',
++    'cpp',
++    version: '1.0',
++    default_options: [
++        'cpp_std=c++23',
++        'warning_level=3',
++    ],
++)
++
++sdbusplus_dep = dependency('sdbusplus')
++boost_dep = dependency('boost')
++
++executable(
++    'sonnychu-l2-service',
++    'sonnychu-l2-service.cpp',
++    dependencies: [sdbusplus_dep, boost_dep],
++    install: true,
++    install_dir: '/usr/bin',
++)
+diff --git a/recipes-l2/sonnychu-l2-service/files/sonnychu-l2-service.cpp b/recipes-l2/sonnychu-l2-service/files/sonnychu-l2-service.cpp
+new file mode 100644
+index 0000000..b6050b7
+--- /dev/null
++++ b/recipes-l2/sonnychu-l2-service/files/sonnychu-l2-service.cpp
+@@ -0,0 +1,199 @@
++/**
++ * SonnyChu L2 Training Service
++ * 
++ * Level 1: D-Bus Service with objectpath, interface, properties
++ * Level 2: Auto monitor file value and display
++ * Level 3: Send signal alarm when value exceeds critical value
++ */
++
++#include <sdbusplus/asio/connection.hpp>
++#include <sdbusplus/asio/object_server.hpp>
++#include <sdbusplus/bus.hpp>
++#include <boost/asio.hpp>
++#include <iostream>
++#include <fstream>
++#include <string>
++#include <chrono>
++
++// D-Bus 命名常數
++constexpr const char* SERVICE_NAME = "xyz.openbmc_project.SonnyChu.L2Service";
++constexpr const char* OBJECT_PATH = "/xyz/openbmc_project/sonnychu/l2service";
++constexpr const char* INTERFACE_NAME = "xyz.openbmc_project.SonnyChu.Value";
++
++// 監控設定
++constexpr const char* MONITOR_FILE = "/tmp/sensor_value";
++constexpr int MONITOR_INTERVAL_SEC = 5;
++
++// 全域變數
++static double currentValue = 25.0;
++static double criticalThreshold = 50.0;
++static std::string description = "SonnyChu L2 Training Service";
++static bool alarmActive = false;
++
++// Interface 指標（用於發送 signal）
++static std::shared_ptr<sdbusplus::asio::dbus_interface> valueInterface;
++
++/**
++ * Level 2: 讀取監控檔案的數值
++ */
++double readValueFromFile()
++{
++    std::ifstream file(MONITOR_FILE);
++    if (file.is_open())
++    {
++        double value;
++        if (file >> value)
++        {
++            std::cout << "[Level 2] Read value from file: " << value << std::endl;
++            return value;
++        }
++    }
++    return currentValue;
++}
++
++/**
++ * Level 3: 發送 ThresholdAlarm Signal
++ */
++void sendThresholdAlarm(double value, double threshold, bool isAssert)
++{
++    if (valueInterface)
++    {
++        try
++        {
++            // 參考 GPUMonitor.cpp: new_signal, append, signal_send
++            sdbusplus::message_t msg = valueInterface->new_signal("ThresholdAlarm");
++            msg.append(value, threshold, isAssert);
++            msg.signal_send();
++            
++            std::cout << "[Level 3] Signal sent - ThresholdAlarm("
++                      << "value=" << value 
++                      << ", threshold=" << threshold 
++                      << ", isAssert=" << (isAssert ? "true" : "false") 
++                      << ")" << std::endl;
++        }
++        catch (const std::exception& e)
++        {
++            std::cerr << "[Level 3] Failed to send signal: " << e.what() << std::endl;
++        }
++    }
++}
++
++/**
++ * Level 2 & 3: 定時監控檔案並檢查閾值
++ */
++void monitorFile(boost::asio::steady_timer& timer, 
++                 std::shared_ptr<sdbusplus::asio::dbus_interface> iface)
++{
++    double newValue = readValueFromFile();
++    
++    if (newValue != currentValue)
++    {
++        currentValue = newValue;
++        iface->set_property("Value", currentValue);
++        std::cout << "[Level 2] Property updated: Value = " << currentValue << std::endl;
++    }
++    
++    // Level 3: 檢查是否超過閾值
++    if (currentValue > criticalThreshold && !alarmActive)
++    {
++        alarmActive = true;
++        sendThresholdAlarm(currentValue, criticalThreshold, true);
++    }
++    else if (currentValue <= criticalThreshold && alarmActive)
++    {
++        alarmActive = false;
++        sendThresholdAlarm(currentValue, criticalThreshold, false);
++    }
++    
++    timer.expires_after(std::chrono::seconds(MONITOR_INTERVAL_SEC));
++    timer.async_wait([&timer, iface](const boost::system::error_code& ec) {
++        if (!ec)
++        {
++            monitorFile(timer, iface);
++        }
++    });
++}
++
++int main()
++{
++    std::cout << "========================================" << std::endl;
++    std::cout << "  SonnyChu L2 Training Service" << std::endl;
++    std::cout << "========================================" << std::endl;
++    std::cout << "Bus Name:    " << SERVICE_NAME << std::endl;
++    std::cout << "Object Path: " << OBJECT_PATH << std::endl;
++    std::cout << "Interface:   " << INTERFACE_NAME << std::endl;
++    std::cout << "Monitor:     " << MONITOR_FILE << " (every " << MONITOR_INTERVAL_SEC << "s)" << std::endl;
++    std::cout << "Threshold:   " << criticalThreshold << std::endl;
++    std::cout << "========================================" << std::endl;
++
++    boost::asio::io_context io;
++    auto conn = std::make_shared<sdbusplus::asio::connection>(io);
++    
++    conn->request_name(SERVICE_NAME);
++    
++    sdbusplus::asio::object_server server(conn);
++    
++    // Level 1: 創建 Interface 並註冊 Properties
++    valueInterface = server.add_interface(OBJECT_PATH, INTERFACE_NAME);
++    
++    // Property: Value (可讀寫)
++    valueInterface->register_property(
++        "Value", currentValue,
++        [](const double& newValue, double& value) {
++            std::cout << "[Level 1] Property Value changed: " << value << " -> " << newValue << std::endl;
++            value = newValue;
++            return true;
++        },
++        [](const double& value) {
++            return value;
++        }
++    );
++    
++    // Property: Description (唯讀)
++    valueInterface->register_property_r(
++        "Description", description,
++        sdbusplus::vtable::property_::const_,
++        [](const std::string& desc) {
++            return desc;
++        }
++    );
++    
++    // Property: CriticalThreshold (可讀寫)
++    valueInterface->register_property(
++        "CriticalThreshold", criticalThreshold,
++        [](const double& newValue, double& value) {
++            std::cout << "[Level 1] CriticalThreshold changed: " << value << " -> " << newValue << std::endl;
++            value = newValue;
++            criticalThreshold = newValue;
++            return true;
++        },
++        [](const double& value) {
++            return value;
++        }
++    );
++    
++    // Level 3: 註冊 Signal
++    valueInterface->register_signal<double, double, bool>("ThresholdAlarm");
++    
++    valueInterface->initialize();
++    
++    std::cout << "[Level 1] D-Bus Service initialized successfully!" << std::endl;
++    
++    // Level 2: 啟動檔案監控
++    boost::asio::steady_timer monitorTimer(io);
++    monitorTimer.expires_after(std::chrono::seconds(MONITOR_INTERVAL_SEC));
++    monitorTimer.async_wait([&monitorTimer](const boost::system::error_code& ec) {
++        if (!ec)
++        {
++            monitorFile(monitorTimer, valueInterface);
++        }
++    });
++    
++    std::cout << "[Level 2] File monitoring started!" << std::endl;
++    std::cout << "[Level 3] ThresholdAlarm signal registered!" << std::endl;
++    std::cout << "Service is running..." << std::endl;
++    
++    io.run();
++    
++    return 0;
++}
+diff --git a/recipes-l2/sonnychu-l2-service/files/sonnychu-l2-service.service b/recipes-l2/sonnychu-l2-service/files/sonnychu-l2-service.service
+new file mode 100644
+index 0000000..aeaea58
+--- /dev/null
++++ b/recipes-l2/sonnychu-l2-service/files/sonnychu-l2-service.service
+@@ -0,0 +1,13 @@
++[Unit]
++Description=SonnyChu L2 Training D-Bus Service
++After=dbus.service
++Requires=dbus.service
++
++[Service]
++Type=simple
++ExecStart=/usr/bin/sonnychu-l2-service
++Restart=on-failure
++RestartSec=5
++
++[Install]
++WantedBy=multi-user.target
+diff --git a/recipes-l2/sonnychu-l2-service/sonnychu-l2-service_1.0.bb b/recipes-l2/sonnychu-l2-service/sonnychu-l2-service_1.0.bb
+new file mode 100644
+index 0000000..4b4f90f
+--- /dev/null
++++ b/recipes-l2/sonnychu-l2-service/sonnychu-l2-service_1.0.bb
+@@ -0,0 +1,24 @@
++SUMMARY = "SonnyChu L2 Training D-Bus Service"
++DESCRIPTION = "A D-Bus service for OpenBMC L2 training with file monitoring and threshold alarm"
++LICENSE = "MIT"
++LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
++
++SRC_URI = "file://sonnychu-l2-service.cpp \
++           file://meson.build \
++           file://sonnychu-l2-service.service"
++
++S = "${WORKDIR}/sources-unpack"
++
++inherit meson pkgconfig systemd
++
++DEPENDS = "sdbusplus boost"
++
++SYSTEMD_SERVICE:${PN} = "sonnychu-l2-service.service"
++SYSTEMD_AUTO_ENABLE = "enable"
++
++do_install:append() {
++    install -d ${D}${systemd_system_unitdir}
++    install -m 0644 ${S}/sonnychu-l2-service.service ${D}${systemd_system_unitdir}/
++}
++
++FILES:${PN} += "${systemd_system_unitdir}/sonnychu-l2-service.service"
+-- 
+2.34.1
+
