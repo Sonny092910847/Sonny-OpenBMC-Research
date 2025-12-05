@@ -1,0 +1,12 @@
+[Unit]
+Description=GPIO Monitor Service - Monitor GPIOA1 state changes
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/gpio-monitor
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
