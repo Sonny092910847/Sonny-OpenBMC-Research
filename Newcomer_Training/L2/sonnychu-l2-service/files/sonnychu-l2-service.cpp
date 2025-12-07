@@ -20,9 +20,9 @@ constexpr const char* SERVICE_NAME = "xyz.openbmc_project.SonnyChu.L2Service";
 constexpr const char* OBJECT_PATH = "/xyz/openbmc_project/sonnychu/l2service";
 constexpr const char* INTERFACE_NAME = "xyz.openbmc_project.SonnyChu.Value";
 
-// 監控設定
-constexpr const char* MONITOR_FILE = "/tmp/sensor_value";
-constexpr int MONITOR_INTERVAL_SEC = 5;
+// 監控設定: 要監控的檔案路徑, 每5秒讀取一次
+constexpr const char* MONITOR_FILE = "/tmp/sensor_value"; 
+constexpr int MONITOR_INTERVAL_SEC = 5; 
 
 // 全域變數
 static double currentValue = 25.0;
@@ -171,14 +171,14 @@ int main()
         }
     );
     
-    // Level 3: 註冊 Signal
+    //註冊 Signal
     valueInterface->register_signal<double, double, bool>("ThresholdAlarm");
     
     valueInterface->initialize();
     
     std::cout << "[Level 1] D-Bus Service initialized successfully!" << std::endl;
     
-    // Level 2: 啟動檔案監控 每五秒讀取一次檔案，檢查數值是否超標！
+    //啟動檔案監控 每五秒讀取一次檔案，檢查數值是否超標！
     boost::asio::steady_timer monitorTimer(io);
     monitorTimer.expires_after(std::chrono::seconds(MONITOR_INTERVAL_SEC));
     monitorTimer.async_wait([&monitorTimer](const boost::system::error_code& ec) {
