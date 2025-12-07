@@ -13,7 +13,7 @@ inherit meson pkgconfig systemd
 
 DEPENDS = "sdbusplus boost"
 
-SYSTEMD_SERVICE:${PN} = "sonnychu-l2-service.service"
+SYSTEMD_SERVICE:${PN} = "sonnychu-l2-service.service"  #BitBake會自動在映像檔中啟用這個服務
 SYSTEMD_AUTO_ENABLE = "enable"
 
 do_install:append() {
