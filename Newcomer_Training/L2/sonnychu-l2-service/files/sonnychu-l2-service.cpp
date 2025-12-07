@@ -21,7 +21,7 @@ constexpr const char* OBJECT_PATH = "/xyz/openbmc_project/sonnychu/l2service";
 constexpr const char* INTERFACE_NAME = "xyz.openbmc_project.SonnyChu.Value";
 
 // 監控設定: 要監控的檔案路徑, 每5秒讀取一次
-constexpr const char* MONITOR_FILE = "/tmp/sensor_value"; 
+constexpr const char* MONITOR_FILE = "/tmp/sensor_value";  //QEMU
 constexpr int MONITOR_INTERVAL_SEC = 5; 
 
 // 全域變數
