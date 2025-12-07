@@ -17,8 +17,8 @@ SYSTEMD_SERVICE:${PN} = "sonnychu-l2-service.service"
 SYSTEMD_AUTO_ENABLE = "enable"
 
 do_install:append() {
-    install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${S}/sonnychu-l2-service.service ${D}${systemd_system_unitdir}/
+    install -d ${D}${systemd_system_unitdir}  //創建目錄(空的)
+    install -m 0644 ${S}/sonnychu-l2-service.service ${D}${systemd_system_unitdir}/    //複製檔案到該目錄
 }
 
 FILES:${PN} += "${systemd_system_unitdir}/sonnychu-l2-service.service"
