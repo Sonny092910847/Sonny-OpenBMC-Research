@@ -178,7 +178,7 @@ int main()
     
     std::cout << "[Level 1] D-Bus Service initialized successfully!" << std::endl;
     
-    // Level 2: 啟動檔案監控
+    // Level 2: 啟動檔案監控 每五秒讀取一次檔案，檢查數值是否超標！
     boost::asio::steady_timer monitorTimer(io);
     monitorTimer.expires_after(std::chrono::seconds(MONITOR_INTERVAL_SEC));
     monitorTimer.async_wait([&monitorTimer](const boost::system::error_code& ec) {
