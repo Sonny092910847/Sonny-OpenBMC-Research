@@ -11,14 +11,14 @@ S = "${WORKDIR}/sources-unpack"
 
 inherit meson pkgconfig systemd
 
-DEPENDS = "sdbusplus boost"
+DEPENDS = "sdbusplus boost" #編譯時依賴
 
-SYSTEMD_SERVICE:${PN} = "sonnychu-l2-service.service"  #BitBake會自動在映像檔中啟用這個服務
+SYSTEMD_SERVICE:${PN} = "sonnychu-l2-service.service"  
 SYSTEMD_AUTO_ENABLE = "enable"
 
 do_install:append() {
-    install -d ${D}${systemd_system_unitdir}  #創建目錄(空的)
-    install -m 0644 ${S}/sonnychu-l2-service.service ${D}${systemd_system_unitdir}/    #複製檔案到該目錄
+    install -d ${D}${systemd_system_unitdir} 
+    install -m 0644 ${S}/sonnychu-l2-service.service ${D}${systemd_system_unitdir}/    
 }
 
 FILES:${PN} += "${systemd_system_unitdir}/sonnychu-l2-service.service"
