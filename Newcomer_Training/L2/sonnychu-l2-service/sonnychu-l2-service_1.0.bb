@@ -3,7 +3,7 @@ DESCRIPTION = "A D-Bus service for OpenBMC L2 training with file monitoring and 
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
-SRC_URI = "file://sonnychu-l2-service.cpp \                                                                 #原始碼來源(去哪裡拿檔案)
+SRC_URI = "file://sonnychu-l2-service.cpp \                                                                 //原始碼來源(去哪裡拿檔案)
            file://meson.build \
            file://sonnychu-l2-service.service"
 
