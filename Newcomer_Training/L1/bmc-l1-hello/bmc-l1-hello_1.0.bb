@@ -8,7 +8,7 @@ SRC_URI = "file://bmc_L1_ID835051.cpp \
 S = "${WORKDIR}/sources"
 UNPACKDIR = "${S}"
 
-do_compile() {
+do_compile() {                                                                           #也可以使用MESON來簡化recipe
     ${CXX} ${CXXFLAGS} ${LDFLAGS} ${S}/bmc_L1_ID835051.cpp -o bmc-l1-hello
 }
 
