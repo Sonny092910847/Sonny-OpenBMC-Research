@@ -60,7 +60,7 @@ void sendThresholdAlarm(double value, double threshold, bool isAssert)
     {
         try
         {
-            sdbusplus::message_t msg = valueInterface->new_signal("ThresholdAlarm");
+            sdbusplus::message_t msg = valueInterface->new_signal("ThresholdAlarm"); //OpenBMC ->  sdbusplus 函式庫的 API
             msg.append(value, threshold, isAssert);
             msg.signal_send();
             
