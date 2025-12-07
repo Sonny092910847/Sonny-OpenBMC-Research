@@ -60,7 +60,6 @@ void sendThresholdAlarm(double value, double threshold, bool isAssert)
     {
         try
         {
-            // 參考 GPUMonitor.cpp: new_signal, append, signal_send
             sdbusplus::message_t msg = valueInterface->new_signal("ThresholdAlarm");
             msg.append(value, threshold, isAssert);
             msg.signal_send();
