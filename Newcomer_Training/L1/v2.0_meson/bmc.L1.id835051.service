@@ -1,0 +1,10 @@
+[Unit]
+Description=BMC L1 Training Service - ID 835051
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/bmc-l1-hello
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
