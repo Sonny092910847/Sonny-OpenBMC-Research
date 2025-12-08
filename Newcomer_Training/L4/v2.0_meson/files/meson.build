@@ -8,10 +8,8 @@ project(
     ],
 )
 
-# Find libgpiod C++ dependency
-gpiodcxx = dependency('libgpiodcxx', required: true)
+gpiodcxx = dependency('libgpiodcxx')
 
-# Build the executable
 executable(
     'gpio-monitor',
     'gpio-monitor.cpp',
@@ -20,7 +18,6 @@ executable(
     install_dir: '/usr/bin',
 )
 
-# Install systemd service file
 install_data(
     'gpio-monitor.service',
     install_dir: '/usr/lib/systemd/system'
