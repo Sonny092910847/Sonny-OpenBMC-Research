@@ -75,7 +75,7 @@ void checkThresholds(double value,
     if (newWarningAlarm != warningAlarmHigh) //若狀態改變 -> 更新D-Bus上的屬性
     {
         warningAlarmHigh = newWarningAlarm;
-        warningIface->set_property("WarningAlarmHigh", warningAlarmHigh);
+        warningIface->set_property("WarningAlarmHigh", warningAlarmHigh); //set_property更新DBus屬性
         std::cout << "Warning alarm changed to: " << (warningAlarmHigh ? "true" : "false") 
                   << " (value=" << value << ")" << std::endl;
       
