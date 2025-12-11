@@ -1,0 +1,26 @@
+{
+    "Exposes": [
+        {
+            "Address": "0x48",
+            "Bus": 3,
+            "Name": "TMP75_Temp",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 90
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper non critical",
+                    "Severity": 0,
+                    "Value": 80
+                }
+            ],
+            "Type": "TMP75"
+        }
+    ],
+    "Name": "Romulus TMP75 Board",
+    "Probe": "TRUE"
+}
