@@ -20,7 +20,7 @@ static constexpr double criticalHigh = 90.0;
 
 bool warningAlarmHigh = false;
 bool criticalAlarmHigh = false;
-bool sensorAvailable = true;
+bool sensorAvailable = true; //new: 追蹤sensor可用狀態
 
 static constexpr auto selLoggerService = "xyz.openbmc_project.Logging.IPMI";
 static constexpr auto selLoggerPath = "/xyz/openbmc_project/Logging/IPMI";
@@ -86,10 +86,11 @@ void checkThresholds(double value,
     }
 }
 
+// v2.0_advance: 不自動建立檔案
 int main()
 {
     std::cout << "TEST_Temp Sensor Service starting..." << std::endl;
-    std::cout << "File detection enabled - monitoring: " << tempFilePath << std::endl;
+    std::cout << "File detection enabled - monitoring: " << tempFilePath << std::endl; 
     
     boost::asio::io_context io;
     auto conn = std::make_shared<sdbusplus::asio::connection>(io);
@@ -98,7 +99,7 @@ int main()
     sdbusplus::asio::object_server objectServer(conn);
     
     auto valueIface = objectServer.add_interface(objectPath, valueInterface);
-    valueIface->register_property("Value", std::numeric_limits<double>::quiet_NaN(),
+    valueIface->register_property("Value", std::numeric_limits<double>::quiet_NaN(), //初始值是NaN，表示「尚未讀取」
         sdbusplus::asio::PropertyPermission::readWrite);
     valueIface->register_property("MaxValue", 127.0);
     valueIface->register_property("MinValue", -128.0);
@@ -120,12 +121,12 @@ int main()
     
     auto availIface = objectServer.add_interface(objectPath, availabilityInterface);
     availIface->register_property("Available", sensorAvailable,
-        sdbusplus::asio::PropertyPermission::readWrite);
+        sdbusplus::asio::PropertyPermission::readWrite);  //動態
     availIface->initialize();
     
     auto operIface = objectServer.add_interface(objectPath, operationalInterface);
     operIface->register_property("Functional", true,
-        sdbusplus::asio::PropertyPermission::readWrite);
+        sdbusplus::asio::PropertyPermission::readWrite);  //動態
     operIface->initialize();
     
     std::cout << "TEST_Temp sensor registered at " << objectPath << std::endl;
@@ -137,9 +138,10 @@ int main()
     
     readTemp = [&](const boost::system::error_code& ec) {
         if (ec) return;
-        
+
+        // ⭐ 新增：檢查檔案是否存在
         bool fileExists = std::filesystem::exists(tempFilePath);
-        
+        // ⭐ 新增：如果存在狀態改變，更新 D-Bus 屬性
         if (fileExists != sensorAvailable)
         {
             sensorAvailable = fileExists;
@@ -148,7 +150,7 @@ int main()
             std::cout << "Sensor availability changed to: " 
                       << (sensorAvailable ? "Available" : "Unavailable") << std::endl;
         }
-        
+        // ⭐ 新增：根據 sensor 狀態決定要不要讀取
         if (sensorAvailable)
         {
             double temp = readTemperature();
@@ -159,7 +161,8 @@ int main()
             }
         }
         else
-        {
+        {   
+            // ⭐ 新增：檔案不存在時，Value 設為 NaN
             valueIface->set_property("Value", std::numeric_limits<double>::quiet_NaN());
         }
         
