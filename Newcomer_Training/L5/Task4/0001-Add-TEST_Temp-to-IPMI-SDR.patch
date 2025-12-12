@@ -1,0 +1,30 @@
+diff --git a/meta-ibm/meta-romulus/recipes-phosphor/configuration/romulus-yaml-config/romulus-ipmi-sensors.yaml b/meta-ibm/meta-romulus/recipes-phosphor/configuration/romulus-yaml-config/romulus-ipmi-sensors.yaml
+index 5ad7b7ebdb..e29e1a14f3 100644
+--- a/meta-ibm/meta-romulus/recipes-phosphor/configuration/romulus-yaml-config/romulus-ipmi-sensors.yaml
++++ b/meta-ibm/meta-romulus/recipes-phosphor/configuration/romulus-yaml-config/romulus-ipmi-sensors.yaml
+@@ -3558,3 +3558,25 @@
+     sensorReadingType: 111
+     sensorType: 31
+     serviceInterface: org.freedesktop.DBus.Properties
++10:
++    bExp: 0
++    entityID: 32
++    entityInstance: 100
++    interfaces:
++        xyz.openbmc_project.Sensor.Value:
++            Value:
++                Offsets:
++                    255:
++                        type: double
++    multiplierM: 1
++    mutability: Mutability::Write|Mutability::Read
++    offsetB: 0
++    path: /xyz/openbmc_project/sensors/temperature/TEST_Temp
++    rExp: 0
++    readingType: readingData
++    scale: 0
++    sensorNamePattern: nameLeaf
++    sensorReadingType: 1
++    sensorType: 1
++    serviceInterface: org.freedesktop.DBus.Properties
++    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
