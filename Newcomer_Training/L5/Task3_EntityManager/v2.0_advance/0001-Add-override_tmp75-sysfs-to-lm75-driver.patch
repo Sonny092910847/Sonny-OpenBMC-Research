@@ -31,6 +31,8 @@
 +    return count;
 +}
 +
++
++/* 檔案設定（把上面三個組合起來） */
 +static DEVICE_ATTR(override_tmp75, 0644, show_override, store_override);
 +
 +
