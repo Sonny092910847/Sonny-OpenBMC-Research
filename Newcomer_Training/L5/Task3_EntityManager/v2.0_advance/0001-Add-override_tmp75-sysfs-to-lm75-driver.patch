@@ -37,9 +37,8 @@
  
  		*val = lm75_reg_to_mc(regval, data->resolution);
 +
-+		/* Apply override if set (for hwmon_temp_input only) */
 +		if (attr == hwmon_temp_input && override_temp != 0) {
-+			*val = override_temp * 1000;  /* Convert to milli-degrees */
++			*val = override_temp * 1000;  
 +		}
 +
  		break;
