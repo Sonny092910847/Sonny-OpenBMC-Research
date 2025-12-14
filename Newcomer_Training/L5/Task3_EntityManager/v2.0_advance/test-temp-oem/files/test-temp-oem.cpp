@@ -89,6 +89,7 @@ ipmi::RspType<> ipmiSetTmp75Override(ipmi::Context::ptr, uint8_t tempValue)
     }
 
     //寫入溫度值 (ex: 從Host發送IPMI Command 0x50 = 80   ->   寫入到/sys/class/hwmon/hwmon2/override_tmp75)
+    //`std::ofstream` 和 `<<` 是 C++ 的封裝，底層會自動呼叫 `write()`
     file << static_cast<int>(tempValue);
     file.close();
     
