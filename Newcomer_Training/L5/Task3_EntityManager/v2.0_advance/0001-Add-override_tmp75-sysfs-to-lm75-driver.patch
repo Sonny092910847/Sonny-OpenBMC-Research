@@ -5,7 +5,7 @@
  }
  
 +
-+/* 第 1 段：新增變數和 sysfs callback */
++/* 第 1 段：建立一個「可讀寫的檔案」*/
 +static long override_temp = 0;
 +static ssize_t show_override(struct device *dev,
 +                             struct device_attribute *attr, char *buf)
