@@ -3,16 +3,13 @@
 #include <filesystem>
 #include <iostream>
 
-// OEM NetFn and Command definitions
 constexpr ipmi::NetFn netFnOem = ipmi::netFnOemOne;  // 0x30
 constexpr ipmi::Cmd cmdSetTestTemp = 0x01;
 constexpr ipmi::Cmd cmdSetTmp75Override = 0x02;  // 新增：TMP75 Override
 
-// Temperature file path (same as Task 1)
 constexpr auto tempFilePath = "/tmp/test/test_temp";
 
-// ===== Cmd 0x01: Set TEST_Temp value =====
-// Usage: ipmitool raw 0x30 0x01 <temp_value>
+
 ipmi::RspType<> ipmiSetTestTemp(ipmi::Context::ptr, uint8_t tempValue)
 {
     std::filesystem::create_directories("/tmp/test");
