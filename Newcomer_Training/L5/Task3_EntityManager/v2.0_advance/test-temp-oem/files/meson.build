@@ -9,12 +9,12 @@ project(
     ],
 )
 
-# Dependencies
+
 ipmid_dep = dependency('libipmid')
 phosphor_logging_dep = dependency('phosphor-logging')
 openssl_dep = dependency('openssl')
 
-# Build shared library for IPMI provider
+
 shared_library(
     'test-temp-oem',
     'test-temp-oem.cpp',
