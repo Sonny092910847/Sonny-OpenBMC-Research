@@ -50,6 +50,7 @@
  	dev_info(dev, "%s: sensor '%s'\n", dev_name(hwmon_dev), client->name);
  
 +	device_create_file(hwmon_dev, &dev_attr_override_tmp75);
++/* 執行後，`/sys/class/hwmon/hwmon2/override_tmp75` 就會出現 */
 +
  	return 0;
  }
