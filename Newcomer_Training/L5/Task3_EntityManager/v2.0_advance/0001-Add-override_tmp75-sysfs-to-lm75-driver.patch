@@ -36,7 +36,7 @@
 +static DEVICE_ATTR(override_tmp75, 0644, show_override, store_override);
 +
 +
-+/*第 2 段：修改 lm75_read() 套用 override*/
++/* 第 2 段：修改 lm75_read() 套用 override */
  static int lm75_read(struct device *dev, enum hwmon_sensor_types type,
  		     u32 attr, int channel, long *val)
  {
@@ -55,7 +55,7 @@
  		return -EINVAL;
 @@ -648,6 +678,8 @@
 
-+/*第 3 段：在 lm75_probe() 註冊 sysfs 屬性*/
++/* 第 3 段：在 lm75_probe() 註冊 sysfs 屬性 --------------> 註冊DEVICE_ATTR所定義的檔案 */
  	dev_info(dev, "%s: sensor '%s'\n", dev_name(hwmon_dev), client->name);
  
 +	device_create_file(hwmon_dev, &dev_attr_override_tmp75);
