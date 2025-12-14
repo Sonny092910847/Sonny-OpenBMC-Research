@@ -6,13 +6,19 @@
  
 +
 +/* 第 1 段：建立一個「可讀寫的檔案」*/
++/* 建立一個「儲存格」叫 `override_temp`，初始值是 0 */
 +static long override_temp = 0;
++
++
++/* 當有人執行 cat override_tmp75 時，把儲存格的值回傳 */
 +static ssize_t show_override(struct device *dev,
 +                             struct device_attribute *attr, char *buf)
 +{
 +    return sprintf(buf, "%ld\n", override_temp);
 +}
 +
++
++/* 當有人執行 echo 80 > override_tmp75 時，把 80 存到儲存格 */
 +static ssize_t store_override(struct device *dev,
 +                              struct device_attribute *attr,
 +                              const char *buf, size_t count)
