@@ -40,6 +40,7 @@
 +		if (attr == hwmon_temp_input && override_temp != 0) {
 +			*val = override_temp * 1000;  
 +		}
++/* 覆蓋 */
 +
  		break;
  	default:
