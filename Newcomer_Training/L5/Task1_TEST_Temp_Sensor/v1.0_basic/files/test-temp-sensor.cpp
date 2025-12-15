@@ -180,8 +180,8 @@ int main()
             checkThresholds(temp, warningIface, criticalIface, conn); // 4. 呼叫checkThresholds檢查是否超過門檻
         }
         
-        timer.expires_after(std::chrono::seconds(1));                 // 5. 1 秒後再執行
-        timer.async_wait(readTemp);                                   // 6. 等待並呼叫自己
+        timer.expires_after(std::chrono::seconds(1));                 // 5. 重新設定 1 秒
+        timer.async_wait(readTemp);                                   // 6. 到期後(1秒後)再呼叫自己
     };
     
     timer.expires_after(std::chrono::seconds(1));
