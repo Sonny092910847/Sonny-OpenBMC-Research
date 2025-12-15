@@ -28,7 +28,7 @@ static constexpr auto selLoggerService = "xyz.openbmc_project.Logging.IPMI";
 static constexpr auto selLoggerPath = "/xyz/openbmc_project/Logging/IPMI";
 static constexpr auto selLoggerInterface = "xyz.openbmc_project.Logging.IPMI";
 
-//SEL日誌函式
+//SEL日誌函式 -> 透過 D-Bus 請求 sel-logger 服務幫你寫一筆 SEL 記錄
 void addSelEntry(sdbusplus::asio::connection& conn, const std::string& message,
                  const std::string& path, const std::vector<uint8_t>& eventData,
                  bool assert, uint16_t genId)
