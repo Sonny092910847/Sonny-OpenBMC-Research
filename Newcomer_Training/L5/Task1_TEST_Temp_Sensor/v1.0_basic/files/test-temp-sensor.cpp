@@ -53,7 +53,7 @@ void addSelEntry(sdbusplus::asio::connection& conn, const std::string& message,
 //溫度讀取函式
 double readTemperature()
 {
-    std::ifstream file(tempFilePath);
+    std::ifstream file(tempFilePath); //打開檔案
     if (!file.is_open())
     {
         std::cerr << "Cannot open temperature file: " << tempFilePath << std::endl;
