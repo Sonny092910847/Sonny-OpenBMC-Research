@@ -42,7 +42,8 @@
  {
 @@ -374,6 +398,12 @@
  			return err;
- 
+
++  /*原本的邏輯：從 I2C 讀取真實溫度*/
  		*val = lm75_reg_to_mc(regval, data->resolution);
 +
 +		if (attr == hwmon_temp_input && override_temp != 0) {
