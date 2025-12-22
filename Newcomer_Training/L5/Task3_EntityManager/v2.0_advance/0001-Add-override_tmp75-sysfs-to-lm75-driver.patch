@@ -5,15 +5,20 @@
  }
  
 +
-+/* Override temperature for L5 Advance Task 2 */
++/* 第 1 段：建立一個「可讀寫的檔案」*/
++/* 建立一個「儲存格」叫 `override_temp`，初始值是 0 */
 +static long override_temp = 0;
 +
++
++/* 當有人執行 cat override_tmp75 時，把儲存格的值回傳 */
 +static ssize_t show_override(struct device *dev,
 +                             struct device_attribute *attr, char *buf)
 +{
 +    return sprintf(buf, "%ld\n", override_temp);
 +}
 +
++
++/* 當有人執行 echo 80 > override_tmp75 時，把 80 存到儲存格 */
 +static ssize_t store_override(struct device *dev,
 +                              struct device_attribute *attr,
 +                              const char *buf, size_t count)
@@ -26,29 +31,36 @@
 +    return count;
 +}
 +
++
++/* 檔案設定（把上面三個組合起來） */
 +static DEVICE_ATTR(override_tmp75, 0644, show_override, store_override);
 +
++
++/* 第 2 段：修改 lm75_read() 套用 override */
  static int lm75_read(struct device *dev, enum hwmon_sensor_types type,
  		     u32 attr, int channel, long *val)
  {
 @@ -374,6 +398,12 @@
  			return err;
- 
+
++  /*原本的邏輯：從 I2C 讀取真實溫度*/
  		*val = lm75_reg_to_mc(regval, data->resolution);
 +
-+		/* Apply override if set (for hwmon_temp_input only) */
 +		if (attr == hwmon_temp_input && override_temp != 0) {
-+			*val = override_temp * 1000;  /* Convert to milli-degrees */
++			*val = override_temp * 1000;  
 +		}
++/* 覆蓋 */
 +
  		break;
  	default:
  		return -EINVAL;
 @@ -648,6 +678,8 @@
- 
+
++/* 第 3 段：在 lm75_probe() 註冊 sysfs 屬性 --------------> 註冊DEVICE_ATTR所定義的檔案 */
  	dev_info(dev, "%s: sensor '%s'\n", dev_name(hwmon_dev), client->name);
  
 +	device_create_file(hwmon_dev, &dev_attr_override_tmp75);
++/* 執行後，`/sys/class/hwmon/hwmon2/override_tmp75` 就會出現 */
 +
  	return 0;
  }
