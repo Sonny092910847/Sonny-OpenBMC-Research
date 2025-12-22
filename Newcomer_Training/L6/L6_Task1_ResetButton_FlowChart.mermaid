@@ -1,0 +1,50 @@
+flowchart TD
+    subgraph GPIO_Event["GPIO Event Detection"]
+        A[Reset Button GPIO<br/>FALLING_EDGE Detected] --> B{state == polarity?}
+        B -->|Yes| C[asserted = true]
+        B -->|No| Z[asserted = false<br/>Button Released - No Action]
+    end
+
+    subgraph Handler["resetButtonHandler()"]
+        C --> D[Update D-Bus Property<br/>ButtonPressed = true]
+        D --> E[resetButtonPressLog<br/>Record to Journal]
+        E --> F{resetButtonMask?}
+        F -->|Yes - Masked| G[Log: reset button press masked<br/>No Action]
+        F -->|No - Not Masked| H[sendPowerControlEvent<br/>Event::resetButtonPressed]
+        H --> I[addRestartCause<br/>RestartCause::resetButton]
+    end
+
+    subgraph StateOn["powerStateOn() - Current State: ON"]
+        I --> J[Receive Event::<br/>resetButtonPressed]
+        J --> K[setPowerState<br/>PowerState::checkForWarmReset]
+        K --> L[warmResetCheckTimerStart<br/>Timer: 500ms]
+    end
+
+    subgraph CheckWarmReset["powerStateCheckForWarmReset()"]
+        L --> M{Wait for Events}
+        
+        M -->|Event::warmResetDetected<br/>Timer Expired| N[setPowerState<br/>PowerState::on]
+        N --> O[System Reset Complete<br/>Return to ON State]
+        
+        M -->|Event::sioS5Assert<br/>S5 Signal Detected| P[warmResetCheckTimer.cancel]
+        P --> Q[setPowerState<br/>PowerState::transitionToOff]
+        Q --> R[System Going to<br/>Power Off]
+        
+        M -->|Event::powerOKDeAssert<br/>Power Lost| S[warmResetCheckTimer.cancel]
+        S --> T[setPowerState<br/>PowerState::off]
+        T --> U[beep - Power Fail<br/>Unexpected Power Loss]
+    end
+
+    style A fill:#e1f5fe,stroke:#0288d1,color:#000000
+    style C fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style G fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style H fill:#fff9c4,stroke:#f9a825,color:#000000
+    style J fill:#fff9c4,stroke:#f9a825,color:#000000
+    style K fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style L fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style N fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style O fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style Q fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style R fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style T fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style U fill:#ffcdd2,stroke:#d32f2f,color:#000000
