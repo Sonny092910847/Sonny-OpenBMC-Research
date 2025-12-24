@@ -1,0 +1,82 @@
+flowchart TD
+    subgraph Trigger["PowerCycle Trigger Sources"]
+        A[D-Bus Request<br/>Chassis.Transition.PowerCycle] --> B[sendPowerControlEvent<br/>Event::powerCycleRequest]
+        A2[D-Bus Request<br/>Host.Transition.Reboot] --> B
+        A3[D-Bus Request<br/>Host.Transition.GracefulWarmReboot] --> B2[sendPowerControlEvent<br/>Event::gracefulPowerCycleRequest]
+    end
+
+    subgraph StateOn_Force["powerStateOn() - Force PowerCycle Path"]
+        B --> C[setPowerState<br/>PowerState::transitionToCycleOff]
+        C --> D[forcePowerOff<br/>Assert GPIO 15000ms]
+    end
+
+    subgraph StateOn_Graceful["powerStateOn() - Graceful PowerCycle Path"]
+        B2 --> E[setPowerState<br/>PowerState::gracefulTransitionToCycleOff]
+        E --> F[gracefulPowerOffTimerStart<br/>Timer: 5 minutes]
+        F --> G[gracefulPowerOff<br/>Assert GPIO 200ms]
+    end
+
+    subgraph TransitionToCycleOff["powerStateTransitionToCycleOff()"]
+        D --> H{Wait for<br/>powerOKDeAssert}
+        H -->|Power OK<br/>De-Asserted| I[gpioAssertTimer.cancel]
+        I --> J[setPowerState<br/>PowerState::cycleOff]
+        J --> K[powerCycleTimerStart<br/>Timer: 5000ms]
+    end
+
+    subgraph GracefulTransitionToCycleOff["powerStateGracefulTransitionToCycleOff()"]
+        G --> L{Wait for Events}
+        L -->|powerOKDeAssert<br/>OS Shutdown OK| M[gracefulPowerOffTimer.cancel]
+        M --> J
+        L -->|gracefulPowerOffTimer<br/>Expired - Timeout| N[setPowerState<br/>PowerState::on]
+        N --> O[Graceful Shutdown Failed<br/>Return to ON]
+    end
+
+    subgraph CycleOff["powerStateCycleOff()"]
+        K --> P{Wait for<br/>powerCycleTimer<br/>Expired}
+        P -->|Timer Expired| Q[powerOKWatchdogTimerStart<br/>Timer: 8000ms]
+        Q --> R[setPowerState<br/>PowerState::waitForPowerOK]
+        R --> S[powerOn<br/>Assert GPIO 200ms]
+    end
+
+    subgraph WaitForPowerOK["powerStateWaitForPowerOK()"]
+        S --> T{Wait for<br/>powerOKAssert}
+        T -->|Power OK<br/>Asserted| U[gpioAssertTimer.cancel]
+        U --> V[powerOKWatchdogTimer.cancel]
+        V --> W[setPowerState<br/>PowerState::on]
+        T -->|Watchdog Timer<br/>Expired| X[setPowerState<br/>PowerState::off]
+        X --> Y[powerOKFailedLog<br/>Power On Failed]
+    end
+
+    subgraph Result["Final Result"]
+        W --> Z[PowerCycle Complete<br/>System Running]
+        Y --> Z2[PowerCycle Failed<br/>System Off]
+        O --> Z3[Graceful Shutdown Failed<br/>System Still Running]
+    end
+
+    style A fill:#e1f5fe,stroke:#0288d1,color:#000000
+    style A2 fill:#e1f5fe,stroke:#0288d1,color:#000000
+    style A3 fill:#e1f5fe,stroke:#0288d1,color:#000000
+    style B fill:#fff9c4,stroke:#f9a825,color:#000000
+    style B2 fill:#fff9c4,stroke:#f9a825,color:#000000
+    style C fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style D fill:#fff9c4,stroke:#f9a825,color:#000000
+    style E fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style F fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style G fill:#fff9c4,stroke:#f9a825,color:#000000
+    style I fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style J fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style K fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style M fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style N fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style O fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style Q fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style R fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style S fill:#fff9c4,stroke:#f9a825,color:#000000
+    style U fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style V fill:#b3e5fc,stroke:#0277bd,color:#000000
+    style W fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style X fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style Y fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style Z fill:#c8e6c9,stroke:#388e3c,color:#000000
+    style Z2 fill:#ffcdd2,stroke:#d32f2f,color:#000000
+    style Z3 fill:#ffcdd2,stroke:#d32f2f,color:#000000
