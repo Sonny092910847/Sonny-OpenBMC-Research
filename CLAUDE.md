@@ -126,3 +126,56 @@ SYSTEMD_AUTO_ENABLE = "enable"
 - QEMU 測試時 SSH port 是 2228
 - 修改 recipe 後需要 `bitbake -c cleanall` 再重新編譯
 - 每次開新 terminal 都要 `source oe-init-build-env`
+## OpenBMC v2.18 待補充套件
+
+ 
+
+目前 `OpenBMC v2.18/` 資料夾包含 42 個核心 repositories，以下套件尚未包含，需要時再下載：
+
+ 
+
+### 高優先級（建議補充）
+
+| Repository | 說明 | GitHub URL |
+
+|------------|------|------------|
+
+| **webui-vue** | Vue.js Web 管理介面 (GUI) | https://github.com/openbmc/webui-vue |
+
+| **pldm** | Platform Level Data Model 實作 | https://github.com/openbmc/pldm |
+
+| **obmc-ikvm** | KVM over IP（遠端控制台） | https://github.com/openbmc/obmc-ikvm |
+
+ 
+
+### 中優先級（視需求補充）
+
+| Repository | 說明 | GitHub URL |
+
+|------------|------|------------|
+
+| **smbios-mdr** | SMBIOS Managed Data Region | https://github.com/openbmc/smbios-mdr |
+
+| **telemetry** | 遙測服務（監控資料收集） | https://github.com/openbmc/telemetry |
+
+| **phosphor-dbus-monitor** | D-Bus 屬性監控服務 | https://github.com/openbmc/phosphor-dbus-monitor |
+
+| **pfr-manager** | Platform Firmware Resilience | https://github.com/openbmc/pfr-manager |
+
+| **phosphor-settingsd** | 系統設定持久化服務 | https://github.com/openbmc/phosphor-settingsd |
+
+| **phosphor-power-control** | 電源按鈕/控制服務 | https://github.com/openbmc/phosphor-power-control |
+
+ 
+
+### 下載指令
+
+```bash
+
+# 在 OpenBMC v2.18/ 目錄下執行
+
+cd ~/Sonny-OpenBMC-Research/OpenBMC\ v2.18/
+
+git clone https://github.com/openbmc/<repository-name>.git
+
+```
