@@ -1,0 +1,14 @@
+--- meta-fxn-originals/meson_options.txt.orig	2025-12-30 18:12:11.719940645 +0800
++++ /home/sonny/bhs-openbmc-project/bhs-openbmc/meta-fxn/recipes-phosphor/flash/phosphor-software-manager/phosphor-software-manager-fxn/meson_options.txt	2025-12-30 18:09:25.008938584 +0800
+@@ -18,6 +18,11 @@
+ option('psu-upgrade', type: 'feature', value: 'enabled',
+     description: 'enable psu upgrade support.')
+ 
++# === L7: Test123 Support START ===
++option('test123-upgrade', type: 'feature', value: 'enabled',
++    description: 'Enable Test123 firmware upgrade support (L7 training).')
++# === L7: Test123 Support END ===
++
+ option('sync-bmc-files', type: 'feature', value: 'enabled',
+     description: 'Enable sync of filesystem files.')
+ 

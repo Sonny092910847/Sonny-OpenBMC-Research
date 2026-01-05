@@ -1,0 +1,21 @@
+# === L7: Test123 Support START ===
+# This entire file was created for L7 training
+[Unit]
+Description=[L7 Training] Test123 Firmware update %i
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/bin/bash -c '\
+    echo "=== Test123 Update Started ===" && \
+    echo "Version ID: %i" && \
+    echo "Image Path: /tmp/images/%i" && \
+    sleep 2 && \
+    if [ -d "/tmp/images/%i" ]; then \
+        echo "Image files found" && \
+        ls -la /tmp/images/%i/ ; \
+    else \
+        echo "No image files found" ; \
+    fi && \
+    echo "=== Test123 Update Completed ==="'
+# === L7: Test123 Support END ===

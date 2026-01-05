@@ -1,0 +1,11 @@
+--- meta-fxn-originals/Version.interface.yaml.orig	2025-12-30 18:12:21.041940760 +0800
++++ /home/sonny/bhs-openbmc-project/bhs-openbmc/meta-fxn/recipes-phosphor/dbus/phosphor-dbus-interfaces/phosphor-dbus-interfaces-fxn/yaml/xyz/openbmc_project/Software/Version.interface.yaml	2025-12-30 18:11:01.544939777 +0800
+@@ -60,3 +60,8 @@
+           - name: PFR_Recovery_BMC
+             description: >
+               The version is a version for the PFR recovery BMC region.
++          # === L7: Test123 Support START ===
++          - name: Test123
++            description: >
++              The version is a version for Test123 firmware (L7 training).
++          # === L7: Test123 Support END ===

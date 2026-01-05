@@ -1,0 +1,18 @@
+--- meta-fxn-originals/activation.hpp.orig	2025-12-30 18:12:21.033940760 +0800
++++ /home/sonny/bhs-openbmc-project/bhs-openbmc/meta-fxn/recipes-phosphor/flash/phosphor-software-manager/phosphor-software-manager-fxn/activation.hpp	2025-12-30 18:09:49.205938883 +0800
+@@ -266,6 +266,15 @@
+ 
+     void updatePSUVersion(std::string version, std::string target);
+ #endif
++// === L7: Test123 Support START ===
++#ifdef TEST123_UPGRADE
++    /* @brief write to Test123 flash function */
++    void flashWriteTest123();
++
++    /** @brief Function that acts on Test123 upgrade service file state changes */
++    void onStateChangesTest123(sdbusplus::message_t&);
++#endif
++// === L7: Test123 Support END ===
+ #if defined(PFR_1060_UPGRADE) && defined(FWUPD_SCRIPT_PFR)
+     /* @brief write to PFR 1060 flash function */
+     void flashWritePfr1060();

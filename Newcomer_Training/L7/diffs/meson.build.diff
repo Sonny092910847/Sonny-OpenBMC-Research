@@ -1,0 +1,24 @@
+--- meta-fxn-originals/meson.build.orig	2025-12-30 18:12:21.023940760 +0800
++++ /home/sonny/bhs-openbmc-project/bhs-openbmc/meta-fxn/recipes-phosphor/flash/phosphor-software-manager/phosphor-software-manager-fxn/meson.build	2025-12-30 18:09:36.391938725 +0800
+@@ -73,6 +73,9 @@
+ conf.set('WANT_SIGNATURE_FULL_VERIFY', get_option('verify-full-signature').enabled())
+ conf.set('CPLD_UPGRADE', get_option('cpld-upgrade').enabled())
+ conf.set('PSU_UPGRADE', get_option('psu-upgrade').enabled())
++# === L7: Test123 Support START ===
++conf.set('TEST123_UPGRADE', get_option('test123-upgrade').enabled())
++# === L7: Test123 Support END ===
+ conf.set('PFR_1060_UPGRADE', get_option('pfr-1060-upgrade').enabled())
+ conf.set('PFR_RECOVERY_1060_UPGRADE', get_option('pfr-recovery-1060-upgrade').enabled())
+ conf.set('PFR_RECOVERY_HOST_UPGRADE', get_option('pfr-recovery-host-upgrade').enabled())
+@@ -244,6 +247,11 @@
+ if get_option('psu-upgrade').enabled()
+     unit_files += 'obmc-flash-psu@.service.in'
+ endif
++# === L7: Test123 Support START ===
++if get_option('test123-upgrade').enabled()
++    unit_files += 'obmc-flash-test123@.service.in'
++endif
++# === L7: Test123 Support END ===
+ 
+ 
+ #if get_option('pfr-1060-upgrade').enabled()
