@@ -1,0 +1,14 @@
+[Unit]
+Description=L2 Training - D-Bus Service with File Monitor
+After=dbus.service
+Requires=dbus.service
+
+[Service]
+Type=dbus
+BusName=xyz.openbmc_project.Training.L2
+ExecStart=/usr/bin/l2
+Restart=always
+SyslogIdentifier=l2
+
+[Install]
+WantedBy=multi-user.target
