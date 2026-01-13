@@ -1,0 +1,10 @@
+[Unit]
+Description=L1 Exercise 1 Training Application
+
+[Service]
+ExecStart=/usr/bin/L1_ex1
+Restart=always
+SyslogIdentifier=L1_ex1
+
+[Install]
+WantedBy=multi-user.target
