@@ -1,0 +1,14 @@
+[Unit]
+Description=L2 Training D-Bus Monitor Service
+After=dbus.service
+Requires=dbus.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/l2
+Restart=on-failure
+RestartSec=5
+SyslogIdentifier=l2
+
+[Install]
+WantedBy=multi-user.target
