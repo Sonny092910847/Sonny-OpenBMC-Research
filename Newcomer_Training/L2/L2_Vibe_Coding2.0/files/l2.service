@@ -1,5 +1,5 @@
 [Unit]
-Description=L2 Training D-Bus Monitor Service
+Description=L2 Training - D-Bus File Monitor Service
 After=dbus.service
 Requires=dbus.service
 

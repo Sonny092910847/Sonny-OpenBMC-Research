@@ -1,5 +1,5 @@
-SUMMARY = "L2 Training - D-Bus File Monitor Service"
-DESCRIPTION = "D-Bus service that monitors a file and sends threshold alerts"
+SUMMARY = "L2 Training D-Bus Monitor Service"
+DESCRIPTION = "D-Bus service with file monitoring and threshold alerts"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/Apache-2.0;md5=89aea4e17d99a7cacdbeed46a0096b10"
 

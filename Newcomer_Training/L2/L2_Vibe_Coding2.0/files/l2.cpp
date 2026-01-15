@@ -1,87 +1,82 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: Copyright OpenBMC Authors
 
-#include <sdbusplus/asio/connection.hpp>
-#include <sdbusplus/asio/object_server.hpp>
-#include <phosphor-logging/lg2.hpp>
-
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/steady_timer.hpp>
+#include <phosphor-logging/lg2.hpp>
+#include <sdbusplus/asio/connection.hpp>
+#include <sdbusplus/asio/object_server.hpp>
+#include <sdbusplus/bus.hpp>
 
 #include <chrono>
 #include <fstream>
 #include <memory>
 #include <string>
 
-PHOSPHOR_LOG2_USING;
-
-namespace
-{
-
+// D-Bus naming
 constexpr auto serviceName = "xyz.openbmc_project.Training.L2";
 constexpr auto objectPath = "/xyz/openbmc_project/training/l2";
 constexpr auto interfaceName = "xyz.openbmc_project.Training.L2.Monitor";
+
+// Monitor settings
 constexpr auto monitorFile = "/tmp/l2_monitor_value";
 constexpr int64_t defaultThreshold = 50;
-constexpr auto pollInterval = std::chrono::seconds(2);
+constexpr auto pollIntervalSeconds = 3;
 
 class L2Monitor
 {
   public:
     L2Monitor(boost::asio::io_context& io,
               std::shared_ptr<sdbusplus::asio::connection> conn) :
-        io(io),
-        conn(conn), server(conn), timer(io), currentValue(0),
-        threshold(defaultThreshold), alertActive(false)
+        io(io), conn(conn), pollTimer(io), value(0), threshold(defaultThreshold),
+        alertActive(false)
     {
+        server = std::make_unique<sdbusplus::asio::object_server>(conn);
         setupDbusInterface();
-        startMonitoring();
+        startPolling();
+        lg2::info("L2 Monitor started - ID: 835051, Name: Sonny Chu");
     }
 
   private:
     void setupDbusInterface()
     {
-        iface = server.add_interface(objectPath, interfaceName);
+        iface = server->add_interface(objectPath, interfaceName);
 
+        // Register Value property (read-only, updated by file monitor)
         iface->register_property_r<int64_t>(
             "Value", sdbusplus::vtable::property_::emits_change,
-            [this](const auto&) { return currentValue; });
+            [this](const auto&) { return value; });
 
+        // Register Threshold property (read-write)
         iface->register_property_rw<int64_t>(
             "Threshold", sdbusplus::vtable::property_::emits_change,
-            [this](const int64_t& newVal, int64_t& oldVal) {
-                oldVal = newVal;
-                threshold = newVal;
+            [this](const int64_t& newValue, int64_t&) {
+                threshold = newValue;
                 lg2::info("Threshold updated to {THRESHOLD}", "THRESHOLD",
                           threshold);
-                return 1;
+                return true;
             },
             [this](const auto&) { return threshold; });
 
+        // Register AlertActive property (read-only)
         iface->register_property_r<bool>(
             "AlertActive", sdbusplus::vtable::property_::emits_change,
             [this](const auto&) { return alertActive; });
 
+        // Register ThresholdAlert signal
         iface->register_signal<bool, int64_t>("ThresholdAlert");
 
         iface->initialize();
-
-        conn->request_name(serviceName);
-
-        lg2::info("L2 Monitor service started - ID: 835051, Name: Sonny Chu");
-        lg2::info("Monitoring file: {FILE}", "FILE", monitorFile);
-        lg2::info("Default threshold: {THRESHOLD}", "THRESHOLD",
-                  defaultThreshold);
     }
 
-    void startMonitoring()
+    void startPolling()
     {
-        timer.expires_after(pollInterval);
-        timer.async_wait([this](const boost::system::error_code& ec) {
+        pollTimer.expires_after(std::chrono::seconds(pollIntervalSeconds));
+        pollTimer.async_wait([this](const boost::system::error_code& ec) {
             if (!ec)
             {
                 pollFile();
-                startMonitoring();
+                startPolling();
             }
         });
     }
@@ -97,14 +92,16 @@ class L2Monitor
         int64_t newValue = 0;
         if (!(file >> newValue))
         {
+            lg2::warning("Failed to read value from {FILE}", "FILE",
+                         monitorFile);
             return;
         }
 
-        if (newValue != currentValue)
+        if (newValue != value)
         {
-            currentValue = newValue;
+            value = newValue;
+            lg2::info("Value updated to {VALUE}", "VALUE", value);
             iface->signal_property("Value");
-            lg2::info("Value updated to {VALUE}", "VALUE", currentValue);
 
             checkThreshold();
         }
@@ -112,49 +109,50 @@ class L2Monitor
 
     void checkThreshold()
     {
-        bool newAlertState = (currentValue > threshold);
+        bool shouldAlert = (value > threshold);
 
-        if (newAlertState != alertActive)
+        if (shouldAlert != alertActive)
         {
-            alertActive = newAlertState;
+            alertActive = shouldAlert;
             iface->signal_property("AlertActive");
 
-            auto signal = iface->new_signal("ThresholdAlert");
-            signal.append(alertActive, currentValue);
-            signal.signal_send();
+            // Emit ThresholdAlert signal
+            auto msg = iface->new_signal("ThresholdAlert");
+            msg.append(alertActive, value);
+            msg.signal_send();
 
             if (alertActive)
             {
                 lg2::warning(
                     "ALERT: Value {VALUE} exceeded threshold {THRESHOLD}",
-                    "VALUE", currentValue, "THRESHOLD", threshold);
+                    "VALUE", value, "THRESHOLD", threshold);
             }
             else
             {
                 lg2::info(
-                    "ALERT CLEARED: Value {VALUE} below threshold {THRESHOLD}",
-                    "VALUE", currentValue, "THRESHOLD", threshold);
+                    "ALERT CLEARED: Value {VALUE} is below threshold {THRESHOLD}",
+                    "VALUE", value, "THRESHOLD", threshold);
             }
         }
     }
 
     boost::asio::io_context& io;
     std::shared_ptr<sdbusplus::asio::connection> conn;
-    sdbusplus::asio::object_server server;
+    std::unique_ptr<sdbusplus::asio::object_server> server;
     std::shared_ptr<sdbusplus::asio::dbus_interface> iface;
-    boost::asio::steady_timer timer;
+    boost::asio::steady_timer pollTimer;
 
-    int64_t currentValue;
+    int64_t value;
     int64_t threshold;
     bool alertActive;
 };
-
-} // namespace
 
 int main()
 {
     boost::asio::io_context io;
     auto conn = std::make_shared<sdbusplus::asio::connection>(io);
+
+    conn->request_name(serviceName);
 
     L2Monitor monitor(io, conn);
 
