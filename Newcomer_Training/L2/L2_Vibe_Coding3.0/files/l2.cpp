@@ -17,10 +17,12 @@ PHOSPHOR_LOG2_USING;
 
 namespace
 {
-
+// D-Bus naming
 constexpr auto serviceName = "xyz.openbmc_project.Training.L2";
 constexpr auto objectPath = "/xyz/openbmc_project/training/l2";
 constexpr auto interfaceName = "xyz.openbmc_project.Training.L2.Monitor";
+
+// Monitor settings
 constexpr auto monitorFile = "/tmp/l2_monitor_value";
 constexpr int64_t defaultThreshold = 50;
 constexpr auto pollInterval = std::chrono::seconds(2);
@@ -30,8 +32,8 @@ class L2Monitor
   public:
     L2Monitor(boost::asio::io_context& io,
               std::shared_ptr<sdbusplus::asio::connection> conn) :
-        io(io),
-        conn(conn), server(conn), timer(io), currentValue(0),
+        io(io),                                                   //Initialize: io members, conn members, server members, timer members
+        conn(conn), server(conn), timer(io), currentValue(0),     //Initialize: Initialize currentValue = 0, Initialize threshold = 50, Initialize alertActive = false
         threshold(defaultThreshold), alertActive(false)
     {
         setupDbusInterface();
@@ -62,6 +64,7 @@ class L2Monitor
             "AlertActive", sdbusplus::vtable::property_::emits_change,
             [this](const auto&) { return alertActive; });
 
+        // Register ThresholdAlert signal
         iface->register_signal<bool, int64_t>("ThresholdAlert");
 
         iface->initialize();
