@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: Apache-2.0                 //授權
 // SPDX-FileCopyrightText: Copyright OpenBMC Authors
 
 #include <sdbusplus/asio/connection.hpp>
@@ -13,16 +13,16 @@
 #include <memory>
 #include <string>
 
-PHOSPHOR_LOG2_USING;
+PHOSPHOR_LOG2_USING; // claude code沒使用到
 
-namespace
+namespace //預防名稱跨檔案重複定義
 {
-// D-Bus naming
+// D-Bus 名稱
 constexpr auto serviceName = "xyz.openbmc_project.Training.L2";
 constexpr auto objectPath = "/xyz/openbmc_project/training/l2";
 constexpr auto interfaceName = "xyz.openbmc_project.Training.L2.Monitor";
 
-// Monitor settings
+// 監控設定 (檔案, threshold, 每隔兩秒檢查一次)
 constexpr auto monitorFile = "/tmp/l2_monitor_value";
 constexpr int64_t defaultThreshold = 50;
 constexpr auto pollInterval = std::chrono::seconds(2);
@@ -31,9 +31,9 @@ class L2Monitor
 {
   public:
     L2Monitor(boost::asio::io_context& io,
-              std::shared_ptr<sdbusplus::asio::connection> conn) :
-        io(io),                                                   //Initialize: io members, conn members, server members, timer members
-        conn(conn), server(conn), timer(io), currentValue(0),     //Initialize: Initialize currentValue = 0, Initialize threshold = 50, Initialize alertActive = false
+              std::shared_ptr<sdbusplus::asio::connection> conn) :  //建構函式
+        io(io),                                                   
+        conn(conn), server(conn), timer(io), currentValue(0),     
         threshold(defaultThreshold), alertActive(false)
     {
         setupDbusInterface();
@@ -41,7 +41,7 @@ class L2Monitor
     }
 
   private:
-    void setupDbusInterface()
+    void setupDbusInterface()  //設定D-Bus
     {
         iface = server.add_interface(objectPath, interfaceName);
 
@@ -77,7 +77,7 @@ class L2Monitor
                   defaultThreshold);
     }
 
-    void startMonitoring()
+    void startMonitoring() //開始監控
     {
         timer.expires_after(pollInterval);
         timer.async_wait([this](const boost::system::error_code& ec) {
@@ -89,7 +89,7 @@ class L2Monitor
         });
     }
 
-    void pollFile()
+    void pollFile()  //讀取檔案
     {
         std::ifstream file(monitorFile);
         if (!file.is_open())
@@ -113,7 +113,7 @@ class L2Monitor
         }
     }
 
-    void checkThreshold()
+    void checkThreshold()  //檢查門檻
     {
         bool newAlertState = (currentValue > threshold);
 
@@ -156,12 +156,12 @@ class L2Monitor
 
 int main()
 {
-    boost::asio::io_context io;
-    auto conn = std::make_shared<sdbusplus::asio::connection>(io);
+    boost::asio::io_context io;  //建立io_context(調度中心，負責管理/監控所有事件)
+    auto conn = std::make_shared<sdbusplus::asio::connection>(io);  //連線到D-Bus，與其他程式溝通
 
-    L2Monitor monitor(io, conn);
+    L2Monitor monitor(io, conn); //working
 
-    io.run();
+    io.run();  //io_context不斷運行
 
     return 0;
 }
