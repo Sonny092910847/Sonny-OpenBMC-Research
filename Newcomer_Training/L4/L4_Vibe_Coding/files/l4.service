@@ -1,0 +1,14 @@
+[Unit]
+Description=L4 Training GPIO Monitor Service
+After=dbus.service
+Requires=dbus.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/l4
+Restart=on-failure
+RestartSec=5
+SyslogIdentifier=l4
+
+[Install]
+WantedBy=multi-user.target
