@@ -1,11 +1,3 @@
-/**
- * @file l4.cpp
- * @brief GPIO Monitor Service - L4 Training
- *
- * Monitors a GPIO input pin and outputs state changes.
- * Default: GPIOZ1 (line 201) - can be changed via environment variable.
- */
-
 #include <gpiod.h>
 
 #include <boost/asio/io_context.hpp>
@@ -13,221 +5,235 @@
 #include <boost/asio/signal_set.hpp>
 #include <phosphor-logging/lg2.hpp>
 
-#include <cerrno>
+#include <atomic>
+#include <csignal>
 #include <cstdlib>
-#include <cstring>
+#include <functional>
 #include <string>
 
 PHOSPHOR_LOG2_USING;
 
-namespace
+namespace gpio_monitor
 {
 
-// Default GPIO configuration
-// GPIOZ1 = line 201 (Z group starts at 200, line 1 = 201)
-constexpr const char* defaultGpioChip = "gpiochip0";
-constexpr unsigned int defaultGpioLine = 201;
-constexpr const char* gpioConsumer = "l4-gpio-monitor";
+// GPIO configuration - use GPIOZ0 (line 200) which is typically free
+constexpr const char* gpioChipName = "gpiochip0";
+constexpr unsigned int gpioLineOffset = 200; // GPIOZ0
+constexpr const char* gpioLineName = "GPIOZ0";
 
 class GpioMonitor
 {
   public:
-    GpioMonitor(boost::asio::io_context& io, const char* chipName,
-                unsigned int lineOffset) :
-        io(io), gpioEventDescriptor(io), chip(nullptr), line(nullptr)
+    GpioMonitor(boost::asio::io_context& ioc) :
+        ioc(ioc), gpioEventDescriptor(ioc), chip(nullptr), line(nullptr),
+        simulatedState(0)
+    {}
+
+    ~GpioMonitor()
     {
-        chip = gpiod_chip_open_by_name(chipName);
-        if (chip == nullptr)
-        {
-            error("Failed to open GPIO chip {CHIP}: {ERR}", "CHIP", chipName,
-                  "ERR", std::strerror(errno));
-            throw std::runtime_error("Failed to open GPIO chip");
-        }
+        cleanup();
+    }
 
-        line = gpiod_chip_get_line(chip, lineOffset);
-        if (line == nullptr)
+    bool initialize()
+    {
+        // Open GPIO chip
+        chip = gpiod_chip_open_by_name(gpioChipName);
+        if (!chip)
         {
-            error("Failed to get GPIO line {LINE}: {ERR}", "LINE", lineOffset,
-                  "ERR", std::strerror(errno));
-            gpiod_chip_close(chip);
-            throw std::runtime_error("Failed to get GPIO line");
+            error("Failed to open GPIO chip: {CHIP}", "CHIP", gpioChipName);
+            return false;
         }
+        info("Opened GPIO chip: {CHIP}", "CHIP", gpioChipName);
 
-        // Request line as input with both edge detection
-        int ret = gpiod_line_request_both_edges_events(line, gpioConsumer);
+        // Get GPIO line
+        line = gpiod_chip_get_line(chip, gpioLineOffset);
+        if (!line)
+        {
+            error("Failed to get GPIO line {OFFSET}", "OFFSET", gpioLineOffset);
+            return false;
+        }
+        info("Got GPIO line: {NAME} (offset {OFFSET})", "NAME", gpioLineName,
+             "OFFSET", gpioLineOffset);
+
+        // Request line for event monitoring (both edges)
+        int ret = gpiod_line_request_both_edges_events(line, "l4-gpio-monitor");
         if (ret < 0)
         {
-            error("Failed to request GPIO line events: {ERR}", "ERR",
-                  std::strerror(errno));
-            gpiod_chip_close(chip);
-            throw std::runtime_error("Failed to request GPIO line events");
+            error("Failed to request GPIO line for events: {NAME}", "NAME",
+                  gpioLineName);
+            return false;
         }
+        info("Requested GPIO line for edge events: {NAME}", "NAME",
+             gpioLineName);
 
         // Get initial state
         int value = gpiod_line_get_value(line);
-        if (value < 0)
+        if (value >= 0)
         {
-            warning("Failed to get initial GPIO value: {ERR}", "ERR",
-                    std::strerror(errno));
-        }
-        else
-        {
-            info("GPIO Monitor started - Chip: {CHIP}, Line: {LINE}, "
-                 "Initial state: {STATE}",
-                 "CHIP", chipName, "LINE", lineOffset, "STATE",
-                 value ? "HIGH" : "LOW");
+            simulatedState = value;
+            info("Initial GPIO state: {NAME} = {VALUE}", "NAME", gpioLineName,
+                 "VALUE", value);
         }
 
         // Get file descriptor for async monitoring
         int fd = gpiod_line_event_get_fd(line);
         if (fd < 0)
         {
-            error("Failed to get GPIO event fd: {ERR}", "ERR",
-                  std::strerror(errno));
-            gpiod_line_release(line);
-            gpiod_chip_close(chip);
-            throw std::runtime_error("Failed to get GPIO event fd");
+            error("Failed to get GPIO event file descriptor");
+            return false;
         }
 
+        // Assign fd to boost::asio stream descriptor
         gpioEventDescriptor.assign(fd);
-        waitForGpioEvent();
+
+        return true;
     }
 
-    ~GpioMonitor()
+    void startMonitoring()
     {
-        if (line != nullptr)
-        {
-            gpiod_line_release(line);
-        }
-        if (chip != nullptr)
-        {
-            gpiod_chip_close(chip);
-        }
+        info("Starting GPIO monitoring for {NAME}", "NAME", gpioLineName);
+        info("Send SIGUSR1 to simulate GPIO state change (kill -USR1 <pid>)");
+        asyncWaitForEvent();
     }
 
-    // Disable copy
-    GpioMonitor(const GpioMonitor&) = delete;
-    GpioMonitor& operator=(const GpioMonitor&) = delete;
+    // Simulate GPIO state change (for QEMU testing)
+    void simulateStateChange()
+    {
+        int oldState = simulatedState;
+        simulatedState = (simulatedState == 0) ? 1 : 0;
+        const char* eventType = (simulatedState == 1) ? "RISING" : "FALLING";
+
+        info("GPIO state changed: {NAME} - Event: {EVENT}, Value: {VALUE}",
+             "NAME", gpioLineName, "EVENT", eventType, "VALUE", simulatedState);
+        info("(Simulated: {OLD} -> {NEW})", "OLD", oldState, "NEW",
+             simulatedState);
+    }
 
   private:
-    void waitForGpioEvent()
+    void asyncWaitForEvent()
     {
         gpioEventDescriptor.async_wait(
             boost::asio::posix::stream_descriptor::wait_read,
             [this](const boost::system::error_code& ec) {
-                if (ec)
-                {
-                    if (ec != boost::asio::error::operation_aborted)
-                    {
-                        error("GPIO async_wait error: {ERR}", "ERR",
-                              ec.message());
-                    }
-                    return;
-                }
-                handleGpioEvent();
+                handleGpioEvent(ec);
             });
     }
 
-    void handleGpioEvent()
+    void handleGpioEvent(const boost::system::error_code& ec)
     {
-        gpiod_line_event event{};
-        int ret = gpiod_line_event_read(line, &event);
-        if (ret < 0)
+        if (ec)
         {
-            error("Failed to read GPIO event: {ERR}", "ERR",
-                  std::strerror(errno));
-            waitForGpioEvent();
+            if (ec == boost::asio::error::operation_aborted)
+            {
+                info("GPIO monitoring stopped");
+                return;
+            }
+            error("GPIO event wait error: {MSG}", "MSG", ec.message());
             return;
         }
 
-        const char* eventType = "UNKNOWN";
-        const char* newState = "UNKNOWN";
-
-        if (event.event_type == GPIOD_LINE_EVENT_RISING_EDGE)
+        // Read the event
+        struct gpiod_line_event event;
+        int ret = gpiod_line_event_read(line, &event);
+        if (ret < 0)
         {
-            eventType = "RISING_EDGE";
-            newState = "HIGH";
-        }
-        else if (event.event_type == GPIOD_LINE_EVENT_FALLING_EDGE)
-        {
-            eventType = "FALLING_EDGE";
-            newState = "LOW";
+            error("Failed to read GPIO event");
+            asyncWaitForEvent();
+            return;
         }
 
-        info("GPIO state changed - Event: {EVENT}, New state: {STATE}, "
-             "Timestamp: {TS}",
-             "EVENT", eventType, "STATE", newState, "TS",
-             event.ts.tv_sec * 1000000000ULL + event.ts.tv_nsec);
+        // Determine event type
+        const char* eventType =
+            (event.event_type == GPIOD_LINE_EVENT_RISING_EDGE) ? "RISING"
+                                                               : "FALLING";
 
-        waitForGpioEvent();
+        // Get current value
+        int currentValue = gpiod_line_get_value(line);
+        simulatedState = currentValue;
+
+        info("GPIO state changed: {NAME} - Event: {EVENT}, Value: {VALUE}",
+             "NAME", gpioLineName, "EVENT", eventType, "VALUE", currentValue);
+
+        // Continue monitoring
+        asyncWaitForEvent();
     }
 
-    boost::asio::io_context& io;
+    void cleanup()
+    {
+        if (gpioEventDescriptor.is_open())
+        {
+            boost::system::error_code ec;
+            gpioEventDescriptor.release();
+        }
+
+        if (line)
+        {
+            gpiod_line_release(line);
+            line = nullptr;
+        }
+
+        if (chip)
+        {
+            gpiod_chip_close(chip);
+            chip = nullptr;
+        }
+    }
+
+    boost::asio::io_context& ioc;
     boost::asio::posix::stream_descriptor gpioEventDescriptor;
-    gpiod_chip* chip;
-    gpiod_line* line;
+    struct gpiod_chip* chip;
+    struct gpiod_line* line;
+    int simulatedState;
 };
 
-} // namespace
+} // namespace gpio_monitor
 
-int main(int argc, char* argv[])
+int main()
 {
     info("L4 GPIO Monitor Service starting...");
 
-    // Allow configuration via environment or command line
-    const char* chipName = defaultGpioChip;
-    unsigned int lineOffset = defaultGpioLine;
+    boost::asio::io_context ioc;
 
-    // Check environment variables
-    const char* envChip = std::getenv("GPIO_CHIP");
-    const char* envLine = std::getenv("GPIO_LINE");
+    // Create GPIO monitor
+    gpio_monitor::GpioMonitor monitor(ioc);
 
-    if (envChip != nullptr)
+    // Setup signal handling for graceful shutdown (SIGINT, SIGTERM)
+    boost::asio::signal_set shutdownSignals(ioc, SIGINT, SIGTERM);
+    shutdownSignals.async_wait(
+        [&ioc](const boost::system::error_code&, int sigNum) {
+            info("Received signal {SIG}, shutting down...", "SIG", sigNum);
+            ioc.stop();
+        });
+
+    // Setup SIGUSR1 for simulating GPIO state change (for QEMU testing)
+    boost::asio::signal_set simulateSignal(ioc, SIGUSR1);
+    std::function<void(const boost::system::error_code&, int)> sigusr1Handler;
+    sigusr1Handler = [&monitor, &simulateSignal,
+                      &sigusr1Handler](const boost::system::error_code& ec,
+                                       int) {
+        if (!ec)
+        {
+            monitor.simulateStateChange();
+            // Re-register for next signal
+            simulateSignal.async_wait(sigusr1Handler);
+        }
+    };
+    simulateSignal.async_wait(sigusr1Handler);
+
+    // Initialize GPIO monitor
+    if (!monitor.initialize())
     {
-        chipName = envChip;
-    }
-    if (envLine != nullptr)
-    {
-        lineOffset = static_cast<unsigned int>(std::strtoul(envLine, nullptr, 10));
-    }
-
-    // Command line override: l4 <chip> <line>
-    if (argc >= 3)
-    {
-        chipName = argv[1];
-        lineOffset = static_cast<unsigned int>(std::strtoul(argv[2], nullptr, 10));
-    }
-
-    info("Configuration - Chip: {CHIP}, Line: {LINE}", "CHIP", chipName, "LINE",
-         lineOffset);
-
-    try
-    {
-        boost::asio::io_context io;
-
-        // Setup signal handling for graceful shutdown
-        boost::asio::signal_set signals(io, SIGINT, SIGTERM);
-        signals.async_wait(
-            [&io](const boost::system::error_code& ec, int signum) {
-                if (!ec)
-                {
-                    info("Received signal {SIG}, shutting down...", "SIG",
-                         signum);
-                    io.stop();
-                }
-            });
-
-        GpioMonitor monitor(io, chipName, lineOffset);
-
-        info("GPIO Monitor running. Waiting for GPIO events...");
-        io.run();
-    }
-    catch (const std::exception& e)
-    {
-        error("Fatal error: {ERR}", "ERR", e.what());
-        return 1;
+        error("Failed to initialize GPIO monitor");
+        return EXIT_FAILURE;
     }
 
-    info("L4 GPIO Monitor Service stopped.");
-    return 0;
+    monitor.startMonitoring();
+
+    info("L4 GPIO Monitor Service running");
+
+    // Run the event loop
+    ioc.run();
+
+    info("L4 GPIO Monitor Service stopped");
+    return EXIT_SUCCESS;
 }

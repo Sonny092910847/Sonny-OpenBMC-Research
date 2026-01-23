@@ -1,9 +1,9 @@
 project(
-    'l4',
+    'l4-gpio-monitor',
     'cpp',
     version: '1.0',
     default_options: [
-        'cpp_std=c++20',
+        'cpp_std=c++23',
         'warning_level=3',
         'werror=true',
     ],
@@ -22,8 +22,9 @@ boost_args = [
     '-DBOOST_SYSTEM_NO_DEPRECATED',
 ]
 
+# Build executable
 executable(
-    'l4',
+    'l4-gpio-monitor',
     'l4.cpp',
     dependencies: [
         sdbusplus,
