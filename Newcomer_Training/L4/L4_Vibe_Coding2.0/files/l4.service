@@ -4,9 +4,14 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/l4-gpio-monitor
+ExecStart=/usr/bin/l4
 Restart=on-failure
 RestartSec=5
+
+# Environment variables for GPIO configuration
+# Default: gpiochip0, line 201 (GPIOZ1)
+# Can be overridden in /etc/default/l4
+EnvironmentFile=-/etc/default/l4
 
 [Install]
 WantedBy=multi-user.target

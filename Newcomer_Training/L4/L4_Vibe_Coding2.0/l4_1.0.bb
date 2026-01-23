@@ -1,20 +1,10 @@
 SUMMARY = "L4 GPIO Monitor Service"
-DESCRIPTION = "A service that monitors GPIO state changes and outputs logs"
+DESCRIPTION = "OpenBMC Training L4 - GPIO input monitoring service"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/Apache-2.0;md5=89aea4e17d99a7cacdbeed46a0096b10"
 
-# Source files
-SRC_URI = " \
-    file://l4.cpp \
-    file://meson.build \
-    file://l4.service \
-"
+inherit meson pkgconfig systemd
 
-# Use UNPACKDIR instead of S = WORKDIR (golden-rules #7)
-S = "${WORKDIR}/sources"
-UNPACKDIR = "${S}"
-
-# Dependencies
 DEPENDS = " \
     boost \
     libgpiod \
@@ -22,23 +12,20 @@ DEPENDS = " \
     sdbusplus \
 "
 
-# Runtime dependencies
 RDEPENDS:${PN} = "libgpiod"
 
-# Inherit classes
-inherit meson
-inherit pkgconfig
-inherit systemd
+SRC_URI = " \
+    file://l4.cpp \
+    file://meson.build \
+    file://l4.service \
+"
 
-# Systemd configuration
+S = "${WORKDIR}/sources"
+UNPACKDIR = "${S}"
+
 SYSTEMD_SERVICE:${PN} = "l4.service"
-SYSTEMD_AUTO_ENABLE = "enable"
 
-# Install systemd service
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${S}/l4.service ${D}${systemd_system_unitdir}/
 }
-
-# Package files
-FILES:${PN} += "${systemd_system_unitdir}/l4.service"

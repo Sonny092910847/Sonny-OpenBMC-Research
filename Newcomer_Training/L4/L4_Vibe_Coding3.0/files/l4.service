@@ -1,0 +1,12 @@
+[Unit]
+Description=L4 GPIO Monitor Service
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/l4-gpio-monitor
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
