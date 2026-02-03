@@ -1,0 +1,19 @@
+[Unit]
+Description=Sensor Monitor D-Bus Service
+After=dbus.service
+
+[Service]
+Type=dbus
+BusName=xyz.openbmc_project.SensorMonitor
+ExecStart=/usr/bin/training-sensor-monitor
+Restart=always
+RestartSec=5
+
+# Configuration via environment variables
+Environment="SENSOR_FILE=/tmp/sensor_value"
+Environment="CRITICAL_HIGH=85.0"
+Environment="CRITICAL_LOW=5.0"
+Environment="POLL_INTERVAL_MS=1000"
+
+[Install]
+WantedBy=multi-user.target
