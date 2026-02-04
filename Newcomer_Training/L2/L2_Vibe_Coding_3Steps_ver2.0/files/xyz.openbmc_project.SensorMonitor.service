@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenBMC Sensor Monitor Service
+After=dbus.service
+Requires=dbus.service
+
+[Service]
+ExecStart=/usr/bin/l2-sensor-monitor
+Restart=always
+RestartSec=5
+Type=dbus
+BusName=xyz.openbmc_project.SensorMonitor
+
+[Install]
+WantedBy=multi-user.target

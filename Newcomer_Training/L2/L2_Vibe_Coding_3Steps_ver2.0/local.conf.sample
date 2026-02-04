@@ -1,0 +1,4 @@
+# Add this line to your build/evb-ast2600/conf/local.conf
+# to include the sensor-monitor service in the image
+
+IMAGE_INSTALL:append = " sensor-monitor"
